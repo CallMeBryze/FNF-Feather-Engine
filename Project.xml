@@ -31,7 +31,14 @@
 
 	<set name="BUILD_DIR" value="export" />
 	<source path="source" />
-	<assets path="assets" />
+
+    <library name="default" preload="false"/>
+
+	<assets path="assets/shared" rename="assets"/>
+    <assets path="assets/preload" preload="true" rename="assets"/>
+
+    <library name="week1" preload="false"/>
+    <assets path="assets/week1" rename="assets" library="week1"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 

@@ -34,10 +34,10 @@ class Note extends FlxSprite {
     override public function new(x:Float, y:Float, direction:NoteDirection = LEFT) {
 		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
 
-		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != properties.strumArrowsPath)) {
-			PlayState.strumAtlas = {
-                identifier: properties.strumArrowsPath,
-                sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
+		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != properties.noteArrowsPath)) {
+			PlayState.arrowAtlas = {
+				identifier: properties.noteArrowsPath,
+				sparrow: Resources.getSparrowAtlas(properties.noteArrowsPath)
             }
         }
 
@@ -113,11 +113,11 @@ class StrumNote extends FlxSprite {
         for (offset in properties.strumOffsets)
             offsets.set(offset.name, new FlxPoint(offset.x, offset.y));
 
-		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != properties.noteArrowsPath))
+		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != properties.strumArrowsPath))
 		{
-			PlayState.arrowAtlas = {
-				identifier: properties.noteArrowsPath,
-				sparrow: Resources.getSparrowAtlas(properties.noteArrowsPath)
+			PlayState.strumAtlas = {
+				identifier: properties.strumArrowsPath,
+				sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
 			}
 		}
 

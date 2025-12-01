@@ -1,9 +1,10 @@
 package;
 
-import engine.Resources;
+import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxSprite;
 import openfl.display.Sprite;
+import states.TitleState;
 
 class Main extends Sprite
 {
@@ -11,7 +12,7 @@ class Main extends Sprite
 	{
 		super();
 
-		addChild(new FlxGame(0, 0, states.PlayState));
+		addChild(new FlxGame(0, 0, TitleState, 240, 240));
         FlxSprite.defaultAntialiasing = false;
 	}
 }

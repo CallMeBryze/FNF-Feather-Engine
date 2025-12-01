@@ -2,7 +2,7 @@ package states.debug;
 
 import flixel.FlxState;
 
-class CharacterDebug extends FlxState {
+class CharacterEditor extends FlxState {
     override public function create()
     {
         super.create();

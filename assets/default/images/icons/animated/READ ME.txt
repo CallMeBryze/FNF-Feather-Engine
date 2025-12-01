@@ -1,0 +1,6 @@
+Animation Prefixes must be the following:
+	transitionIdle -> idle
+	transitionDying -> dying
+
+Framerate must be 24FPS, and the frame size must be 150x150. Bigger and smaller can work, but it'll be downscaled.
+Also, just to note, I did NOT test this. I am assuming it works.

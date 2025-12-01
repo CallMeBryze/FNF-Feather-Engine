@@ -1,0 +1,14 @@
+{
+    "strumArrowsPath": "ui/notes/noteStrumline",
+    "noteArrowsPath": "ui/notes/notes",
+    "noteHoldsPath": "ui/notes/noteHolds",
+
+    "antialiasing": true,
+    "strumOffsets": [
+        {
+            "name": "confirm",
+            "x": -13,
+            "y": -13
+        }
+    ]
+}

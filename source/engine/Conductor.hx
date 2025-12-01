@@ -4,12 +4,9 @@ typedef BPMChangeEvent =
 {
 	var stepTime:Int;
 	var songTime:Float;
-	var bpm:Int;
+	var bpm:Float;
 }
 
-/**
- * Just reusing the old code from the base-game. Specifically version 0.2.7.1.
- */
 class Conductor
 {
 	public static var bpm:Float = 100;
@@ -25,11 +22,11 @@ class Conductor
 
 	public function new() {}
 
-	/*public static function mapBPMChanges(song:SwagSong)
+	public static function mapBPMChanges(song:Song)
 	{
 		bpmChangeMap = [];
 
-		var curBPM:Int = song.bpm;
+		var curBPM:Float = song.bpm;
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length)
@@ -50,7 +47,7 @@ class Conductor
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
 		trace("new BPM map BUDDY " + bpmChangeMap);
-	}*/
+	}
 
 	public static function changeBPM(newBpm:Float)
 	{

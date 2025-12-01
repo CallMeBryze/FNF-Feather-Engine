@@ -6,30 +6,41 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import objects.Character;
+import objects.Player;
 import objects.arrows.Note;
 import objects.arrows.Strumline;
+import states.template.MusicBeatState;
 
-class PlayState extends FlxState
+class PlayState extends MusicBeatState
 {
+    // assets
+    public static var arrowAtlas:SparrowTracker;
+    public static var strumAtlas:SparrowTracker;
+
 	private var gameCam:FlxCamera;
 	private var hudCam:FlxCamera;
 
-	private var player:Character;
+	private var player:Player;
 	private var dancer:Character;
 	private var opponent:Character;
 
     private var strumLine:Strumline;
 
     public static var _song:Song = {
+        song: "test",
         bpm: 120,
         stage: "stage",
         player: "bf",
-        opponent: "daddy dearest",
+        opponent: "dad",
         dancer: "girlfriend",
-        notes: []
+        notes: [],
+        defaultLengthInSteps: 16
     };
 
     // Stage Layers
@@ -51,7 +62,7 @@ class PlayState extends FlxState
 
 		super.create();
 
-		player = new Character(500, 250, _song.player);
+		player = new Player(500, 250, _song.player);
         stageLayerCharacters.add(player);
 
         switch (_song.stage) {
@@ -95,11 +106,38 @@ class PlayState extends FlxState
         strumLine.screenCenter(X);
 	}
 
+    private var inGameOver:Bool = false;
+    private var objectAlphaMap:Map<FlxSprite, Float> = new Map();
+
 	override public function update(elapsed:Float)
 	{
+        if (player.isDead) {
+            if (!inGameOver) {
+				gameCam.focusOn(player.getGraphicMidpoint());
+
+				var getAlpha:FlxSprite->Void = (object) ->
+				{
+                    objectAlphaMap.set(object, object.alpha);
+				};
+
+				stageLayerBack.forEachOfType(FlxSprite, getAlpha);
+				stageLayerFront.forEachOfType(FlxSprite, getAlpha);
+
+				inGameOver = true;
+            }
+
+			var transitionObjects:FlxSprite->Void = (object) -> {
+				var originalAlpha:Float = objectAlphaMap.get(object);
+				object.alpha = FlxMath.lerp(object.alpha, Math.max(originalAlpha - 0.6, 0), FlxMath.getElapsedLerp(0.01, elapsed));
+			};
+
+			stageLayerBack.forEachOfType(FlxSprite, transitionObjects);
+            stageLayerFront.forEachOfType(FlxSprite, transitionObjects);
+        }
+
 		super.update(elapsed);
 
-        if (player.animation.finished)
+        if (!player.busy && player.animation.finished)
             player.dance();
 
         if (FlxG.keys.pressed.LEFT)
@@ -111,5 +149,13 @@ class PlayState extends FlxState
 			gameCam.scroll.y -= 10;
         else if (FlxG.keys.pressed.DOWN)
 			gameCam.scroll.y += 10;
+
+        if (FlxG.keys.pressed.F7) {
+            player.gameOver(()->{
+                hudCam.fade(FlxColor.BLACK, 3, false, ()->{
+					FlxG.switchState(() -> new PlayState());
+                });
+            });
+        }
 	}
 }

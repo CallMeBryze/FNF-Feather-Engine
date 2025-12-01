@@ -5,24 +5,49 @@ import engine.Resources;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
-import objects.arrows.Styles.NoteStyle;
+import flixel.math.FlxPoint;
+import haxe.Json;
+import states.PlayState;
+
+typedef NoteStyle = {
+    var strumArrowsPath:String;
+    var noteArrowsPath:String;
+    var noteHoldsPath:String;
+
+    var antialiasing:Bool;
+    var strumOffsets:Array<NoteAnimationOffsets>;
+}
+
+typedef NoteAnimationOffsets = {
+    var name:String;
+    var x:Float;
+    var y:Float;
+}
 
 class Note extends FlxSprite {
     public static final defaultNoteWidth:Int = 150;
 
+    private var properties:NoteStyle;
+
     public var direction:NoteDirection;
 
     override public function new(x:Float, y:Float, direction:NoteDirection = LEFT) {
-		if (!Resources.universalCache.exists("arrowNotes"))
-			Resources.universalCache.set("arrowNotes", Resources.getSparrowAtlas("ui/notes/notes"));
+		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
+
+		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != properties.strumArrowsPath)) {
+			PlayState.strumAtlas = {
+                identifier: properties.strumArrowsPath,
+                sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
+            }
+        }
 
         super(x, y);
 
         this.direction = direction;
 
-        antialiasing = true;
+        antialiasing = properties.antialiasing;
 
-		frames = Resources.universalCache.get("arrowNotes");
+		frames = PlayState.arrowAtlas.sparrow;
         scale.set(0.7, 0.7);
         updateHitbox();
 
@@ -47,18 +72,60 @@ class Note extends FlxSprite {
 	{
 		animation.addByPrefix(name, prefix, 24, true);
 	}
+
+    public static function convertFromEnum(direction:NoteDirection):Int {
+        switch (direction) {
+            case LEFT:
+                return 0;
+            case UP:
+                return 1;
+            case DOWN:
+                return 2;
+            case RIGHT:
+                return 3;
+        }
+
+        return 0;
+    }
+
+    public static function convertToEnum(data:Int):NoteDirection {
+        switch (data) {
+            case 0:
+                return LEFT;
+            case 1:
+                return UP;
+            case 2:
+                return DOWN;
+            case 3:
+                return RIGHT;
+        }
+
+        return LEFT;
+    }
 }
 
 class StrumNote extends FlxSprite {
+	private var properties:NoteStyle;
+    private var offsets:Map<String, FlxPoint> = new Map();
+
     override public function new(x:Float, y:Float, direction:NoteDirection = LEFT) {
-        if (!Resources.universalCache.exists("strumNotes"))
-			Resources.universalCache.set("strumNotes", Resources.getSparrowAtlas("ui/notes/noteStrumline"));
+		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
+        for (offset in properties.strumOffsets)
+            offsets.set(offset.name, new FlxPoint(offset.x, offset.y));
+
+		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != properties.noteArrowsPath))
+		{
+			PlayState.arrowAtlas = {
+				identifier: properties.noteArrowsPath,
+				sparrow: Resources.getSparrowAtlas(properties.noteArrowsPath)
+			}
+		}
 
         super(x, y);
 
-        antialiasing = true;
+        antialiasing = properties.antialiasing;
 
-		frames = Resources.universalCache.get("strumNotes");
+		frames = PlayState.strumAtlas.sparrow;
 		scale.set(0.7, 0.7);
         updateHitbox();
 
@@ -104,9 +171,11 @@ class StrumNote extends FlxSprite {
     {
         this.centerOffsets();
 
-        if (getCurrentAnimation() == 'confirm') {
-            this.offset.x -= 13;
-            this.offset.y -= 13;
+        if (offsets.exists(getCurrentAnimation())) {
+			var swagOffsets:FlxPoint = offsets.get(getCurrentAnimation());
+
+            this.offset.x += swagOffsets.x;
+            this.offset.y += swagOffsets.y;
         } else {
             this.centerOrigin();
         }

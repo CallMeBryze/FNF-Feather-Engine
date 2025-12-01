@@ -12,7 +12,6 @@ import openfl.utils.AssetType;
 import openfl.utils.Future;
 
 class Resources {
-    public static var universalCache:Map<String, Dynamic> = new Map();
     private static var selectedLibrary:String = null;
 
     /**
@@ -23,8 +22,6 @@ class Resources {
      * @return Future<AssetLibrary>
      */
     public static function changeLibrary(name:String):Future<AssetLibrary> {
-        universalCache.clear();
-
         if (selectedLibrary != null) {
 			Assets.cache.clear(selectedLibrary);
 			Assets.unloadLibrary(selectedLibrary);
@@ -97,7 +94,25 @@ class Resources {
     }
 
     /**
-     * [Description]
+     * @param path Starts in the `assets` directory.
+     * @param library String
+     * @param type AssetType
+     * @return Bool
+     */
+    public static function assetExists(path:String, ?library:String = null, ?type:AssetType):Bool
+    {
+        var key:String = Path.normalize('assets/$path');
+
+        var finalKey:String = key;
+		if (library != null)
+			finalKey = '$library:$key'
+		else
+			finalKey = '${detectLibrary(key)}:$key';
+
+        return Assets.exists(finalKey, type);
+    }
+
+    /**
      * @param path Starts in the `assets/images` directory. Do not include an extension.
      * @return FlxAtlasFrames
      */
@@ -116,4 +131,9 @@ class Resources {
 typedef ResourceWithIdentifier = {
     var identifier:String;
     var resource:Dynamic;
+}
+
+typedef SparrowTracker = {
+    var identifier:String;
+    var sparrow:FlxAtlasFrames;
 }

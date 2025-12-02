@@ -6,6 +6,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
@@ -15,6 +16,7 @@ import objects.Character;
 import objects.Player;
 import objects.arrows.Note;
 import objects.arrows.Strumline;
+import states.debug.ChartingState;
 import states.template.MusicBeatState;
 
 class PlayState extends MusicBeatState
@@ -22,6 +24,7 @@ class PlayState extends MusicBeatState
     // assets
     public static var arrowAtlas:SparrowTracker;
     public static var strumAtlas:SparrowTracker;
+    public static var sustainGrapihc:FlxGraphic;
 
 	private var gameCam:FlxCamera;
 	private var hudCam:FlxCamera;
@@ -128,7 +131,7 @@ class PlayState extends MusicBeatState
 
 			var transitionObjects:FlxSprite->Void = (object) -> {
 				var originalAlpha:Float = objectAlphaMap.get(object);
-				object.alpha = FlxMath.lerp(object.alpha, Math.max(originalAlpha - 0.6, 0), FlxMath.getElapsedLerp(0.01, elapsed));
+				object.alpha = FlxMath.lerp(object.alpha, Math.max(originalAlpha - 0.75, 0), FlxMath.getElapsedLerp(0.01, elapsed));
 			};
 
 			stageLayerBack.forEachOfType(FlxSprite, transitionObjects);
@@ -150,12 +153,14 @@ class PlayState extends MusicBeatState
         else if (FlxG.keys.pressed.DOWN)
 			gameCam.scroll.y += 10;
 
-        if (FlxG.keys.pressed.F7) {
+        if (FlxG.keys.pressed.F9) {
             player.gameOver(()->{
                 hudCam.fade(FlxColor.BLACK, 3, false, ()->{
 					FlxG.switchState(() -> new PlayState());
                 });
             });
+        } else if (FlxG.keys.justPressed.F7) {
+            FlxG.switchState(() -> new ChartingState());
         }
 	}
 }

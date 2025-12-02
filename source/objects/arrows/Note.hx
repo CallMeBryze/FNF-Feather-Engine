@@ -1,10 +1,10 @@
 package objects.arrows;
 
-import engine.Resources.ResourceWithIdentifier;
 import engine.Resources;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.math.FlxPoint;
 import haxe.Json;
 import states.PlayState;
@@ -30,8 +30,15 @@ class Note extends FlxSprite {
     private var properties:NoteStyle;
 
     public var direction:NoteDirection;
+    public var isSustain:Bool = false;
+    public var sustainLength:Float = 0;
 
-    override public function new(x:Float, y:Float, direction:NoteDirection = LEFT) {
+	public var scoreMultiplier:Float = 1;
+
+    public var strumTime:Float;
+    public var prevNote:Note;
+
+    override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?sustainLength:Float = 0, ?prevNote:Note = null) {
 		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
 
 		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != properties.noteArrowsPath)) {
@@ -40,6 +47,12 @@ class Note extends FlxSprite {
 				sparrow: Resources.getSparrowAtlas(properties.noteArrowsPath)
             }
         }
+
+        this.strumTime = strumTime;
+
+        this.isSustain = isSustain;
+        this.prevNote = prevNote;
+        this.sustainLength = sustainLength;
 
         super(x, y);
 
@@ -56,15 +69,56 @@ class Note extends FlxSprite {
         addAnim("noteDOWN", "noteDown");
 		addAnim("noteRIGHT", "noteRight");
 
-        switch (direction) {
-            case LEFT:
-                animation.play("noteLEFT");
-            case UP:
-                animation.play("noteUP");
-            case DOWN:
-                animation.play("noteDOWN");
-            case RIGHT:
-                animation.play("noteRIGHT");
+		addAnim("sustainLEFTpiece", "sustainLeftPiece");
+		addAnim("sustainUPpiece", "sustainUpPiece");
+		addAnim("sustainDOWNpiece", "sustainDownPiece");
+		addAnim("sustainRIGHTpiece", "sustainRightPiece");
+
+		addAnim("sustainLEFTend", "sustainLeftEnd");
+		addAnim("sustainUPend", "sustainUpEnd");
+		addAnim("sustainDOWNend", "sustainDownEnd");
+		addAnim("sustainRIGHTend", "sustainRightEnd");
+
+        if (!isSustain) {
+			switch (direction)
+			{
+				case LEFT:
+					animation.play("noteLEFT");
+				case UP:
+					animation.play("noteUP");
+				case DOWN:
+					animation.play("noteDOWN");
+				case RIGHT:
+					animation.play("noteRIGHT");
+			}
+        } else {
+            scoreMultiplier = 0.2;
+
+            if (prevNote != null) {
+				switch (direction)
+				{
+					case LEFT:
+						animation.play("sustainLEFTend");
+					case UP:
+						animation.play("sustainUPend");
+					case DOWN:
+						animation.play("sustainDOWNend");
+					case RIGHT:
+						animation.play("sustainRIGHTend");
+				}
+            } else {
+				switch (direction)
+				{
+					case LEFT:
+						animation.play("sustainLEFTpiece");
+					case UP:
+						animation.play("sustainUPpiece");
+					case DOWN:
+						animation.play("sustainDOWNpiece");
+					case RIGHT:
+						animation.play("sustainRIGHTpiece");
+				}
+            }
         }
     }
 
@@ -101,84 +155,6 @@ class Note extends FlxSprite {
         }
 
         return LEFT;
-    }
-}
-
-class StrumNote extends FlxSprite {
-	private var properties:NoteStyle;
-    private var offsets:Map<String, FlxPoint> = new Map();
-
-    override public function new(x:Float, y:Float, direction:NoteDirection = LEFT) {
-		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
-        for (offset in properties.strumOffsets)
-            offsets.set(offset.name, new FlxPoint(offset.x, offset.y));
-
-		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != properties.strumArrowsPath))
-		{
-			PlayState.strumAtlas = {
-				identifier: properties.strumArrowsPath,
-				sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
-			}
-		}
-
-        super(x, y);
-
-        antialiasing = properties.antialiasing;
-
-		frames = PlayState.strumAtlas.sparrow;
-		scale.set(0.7, 0.7);
-        updateHitbox();
-
-        fixOffsets();
-
-        var directionStr:String;
-        switch (direction) {
-            case LEFT:
-				directionStr = "Left";
-            case DOWN:
-                directionStr = "Down";
-            case UP:
-                directionStr = "Up";
-            case RIGHT:
-                directionStr = "Right";
-        }
-
-       addAnim("static", 'static$directionStr', true);
-       addAnim("pressed", 'press$directionStr');
-       addAnim("confirm", 'confirm$directionStr');
-
-       playAnim("static");
-    }
-
-    public function playAnim(name:String = 'static', ?force:Bool = false):Void {
-        animation.play(name, force);
-        fixOffsets();
-    }
-
-    private function addAnim(name:String, prefix:String, ?loop:Bool = false):Void {
-        animation.addByPrefix(name, prefix, 24, loop);
-    }
-
-	public function getCurrentAnimation():String
-	{
-		if (this.animation == null || this.animation.curAnim == null)
-			return "";
-
-		return this.animation.curAnim.name;
-	}
-
-    private function fixOffsets():Void
-    {
-        this.centerOffsets();
-
-        if (offsets.exists(getCurrentAnimation())) {
-			var swagOffsets:FlxPoint = offsets.get(getCurrentAnimation());
-
-            this.offset.x += swagOffsets.x;
-            this.offset.y += swagOffsets.y;
-        } else {
-            this.centerOrigin();
-        }
     }
 }
 

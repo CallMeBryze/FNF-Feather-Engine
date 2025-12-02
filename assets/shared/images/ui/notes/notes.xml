@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="notes.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="noteDown0000" x="316" y="0" width="161" height="158" frameX="2" frameY="2" frameWidth="157" frameHeight="154"/>
+	<SubTexture name="noteLeft0000" x="0" y="0" width="158" height="161" frameX="2" frameY="2" frameWidth="154" frameHeight="157"/>
+	<SubTexture name="noteRight0000" x="158" y="0" width="158" height="161" frameX="2" frameY="2" frameWidth="154" frameHeight="157"/>
+	<SubTexture name="noteUp0000" x="0" y="161" width="161" height="158" frameX="2" frameY="2" frameWidth="157" frameHeight="154"/>
+	<SubTexture name="sustainDownEnd0000" x="54" y="319" width="54" height="68" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainDownPiece0000" x="269" y="161" width="54" height="91" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainLeftEnd0000" x="377" y="161" width="54" height="68" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainLeftPiece0000" x="323" y="161" width="54" height="91" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainRightEnd0000" x="108" y="319" width="54" height="68" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainRightPiece0000" x="161" y="161" width="54" height="91" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainUpEnd0000" x="0" y="319" width="54" height="68" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+	<SubTexture name="sustainUpPiece0000" x="215" y="161" width="54" height="91" frameX="1" frameY="2" frameWidth="52" frameHeight="87"/>
+</TextureAtlas>

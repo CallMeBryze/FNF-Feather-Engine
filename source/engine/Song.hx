@@ -21,16 +21,26 @@ typedef SongSection = {
     /**
      * 0: Opponent.
      * 1: Player.
-     * 2: Dancer.
      */
     var sectionFocus:Int;
 
-    var ?playerNotes:Array<SectionNote>;
-    var ?dancerNotes:Array<SectionNote>;
-    var ?opponentNotes:Array<SectionNote>;
+	var opponentNotes:Array<SectionNote>;
+    var playerNotes:Array<SectionNote>;
 }
 
 typedef SectionNote = {
     var strumTime:Float;
-    var data:Int;
+
+    /**
+     * AKA Direction
+     */
+    var arrow:Int;
+
+    var ?noteType:String;
+    var sustainLength:Float;
+}
+
+enum SectionType {
+    PLAYER;
+    OPPONENT;
 }

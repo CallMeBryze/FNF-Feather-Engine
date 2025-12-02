@@ -17,6 +17,7 @@ class HealthIcon extends FlxSprite
 	override public function new(character:String, isPlayer:Bool, ?antialiasing:Bool = true, ?healthBar:FlxBar = null, ?type:HealthIconType = SIMPLE)
     {
         this.type = type;
+		this.isPlayer = isPlayer;
         linkedHealthBar = healthBar;
 
         super();

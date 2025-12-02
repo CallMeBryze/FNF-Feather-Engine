@@ -31,25 +31,16 @@ class Resources {
         return Assets.loadLibrary(name);
     }
 
-    private static function detectLibrary(key:String):String {
-        if (selectedLibrary != null) {
-			if (Assets.exists('$selectedLibrary:$key'))
-			{
-				return selectedLibrary;
-			}
-			else if (Assets.exists(key))
-			{
-				return 'default';
-			}
-			else
-			{
-				trace('Library of asset isn\'t loaded, or asset cannot be found!');
-				return 'default';
-			}
-        }
-        else {
-            return 'default';
-        }
+    /**
+     * Internal Function
+     * @param path Starts in `assets` directory.
+     * @param library 
+     * @return Bool
+     */
+    private static function existsInLibrary(path:String, library:String):Bool {
+		var key:String = Path.normalize('$library:assets/$library/$path');
+
+        return Assets.exists(key);
     }
 
     /**
@@ -59,16 +50,15 @@ class Resources {
      */
     public static function getImage(path:String, ?library:String = null):FlxGraphic
     {
-        var key:String = Path.normalize('assets/images/$path.png');
+        if (library == null)
+            library = selectedLibrary;
 
-        var finalKey:String = key;
-        if (library != null)
-            finalKey = '$library:$key'
-        else
-			finalKey = '${detectLibrary(key)}:$key';
+		var key:String = Path.normalize('assets/images/$path.png');
+		if (library != null && existsInLibrary('images/$path.png', library))
+			key = Path.normalize('$library:assets/$library/images/$path.png');
 
         var graphic:FlxGraphic;
-        graphic = FlxGraphic.fromBitmapData(Assets.getBitmapData(finalKey));
+        graphic = FlxGraphic.fromBitmapData(Assets.getBitmapData(key));
         graphic.persist = true;
 
         return graphic;
@@ -82,15 +72,14 @@ class Resources {
      */
     public static function getTxt(path:String, ?ext:String = 'txt', ?library:String = null):String
     {
+		if (library == null)
+			library = selectedLibrary;
+
         var key:String = Path.normalize('assets/$path.$ext');
+		if (library != null && existsInLibrary('$path.$ext', library))
+			key = Path.normalize('$library:assets/$library/$path.$ext');
 
-        var finalKey:String = key;
-		if (library != null)
-			finalKey = '$library:$key'
-		else
-			finalKey = '${detectLibrary(key)}:$key';
-
-        return Assets.getText(finalKey);
+        return Assets.getText(key);
     }
 
     /**
@@ -101,15 +90,14 @@ class Resources {
      */
     public static function assetExists(path:String, ?library:String = null, ?type:AssetType):Bool
     {
+		if (library == null)
+			library = selectedLibrary;
+
         var key:String = Path.normalize('assets/$path');
+        if (library != null && existsInLibrary(path, library))
+			key = Path.normalize('$library:assets/$library/$path');
 
-        var finalKey:String = key;
-		if (library != null)
-			finalKey = '$library:$key'
-		else
-			finalKey = '${detectLibrary(key)}:$key';
-
-        return Assets.exists(finalKey, type);
+        return Assets.exists(key, type);
     }
 
     /**
@@ -122,16 +110,10 @@ class Resources {
     }
 }
 
-/*typedef ResourceElementJson = {
-    var path:String;
-    var type:AssetType;
-    var ?library:String;
-}*/
-
-typedef ResourceWithIdentifier = {
+/*typedef ResourceWithIdentifier = {
     var identifier:String;
     var resource:Dynamic;
-}
+}*/
 
 typedef SparrowTracker = {
     var identifier:String;

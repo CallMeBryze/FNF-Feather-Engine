@@ -33,10 +33,10 @@
 	<set name="BUILD_DIR" value="export/debug" if="debug"/>
 	<source path="source" />
 
-	<assets path="assets/default" rename="assets"/>
+	<assets path="assets/shared" rename="assets"/>
 
     <library name="week1" preload="false"/>
-    <assets path="assets/week1" rename="assets" library="week1"/>
+    <assets path="assets/week1" library="week1"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 

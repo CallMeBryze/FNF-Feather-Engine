@@ -99,6 +99,8 @@ class LoadingState extends MusicBeatState {
 
     private var cacheProgress:Int = 0;
 
+    private var finishedTransition:Bool = false;
+
     override public function create():Void {
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage("funkay"));
 		bg.antialiasing = true;
@@ -136,7 +138,7 @@ class LoadingState extends MusicBeatState {
 				trace('Cached Asset: ${targetAsset.key}');
 				#end
 
-				timer.reset(FlxG.maxElapsed);
+				timer.reset(1.0 / FlxG.updateFramerate);
             } else {
                 timer.destroy();
 				FlxG.switchState(() -> targetState);
@@ -147,8 +149,10 @@ class LoadingState extends MusicBeatState {
     override public function update(elapsed:Float):Void {
         super.update(elapsed);
 
-		if (transOutFinished && currentCacheText.text == defaultCacheProgressText && assetsToCache[assetsToCache.length - 1] != null) {
+		if (assetsToCache[assetsToCache.length - 1] != null) {
 			currentCacheText.text = assetsToCache[assetsToCache.length - 1].key;
+        } else {
+            currentCacheText.text = "Finished!";
         }
 
         if (assetsToCache.length <= 0) {

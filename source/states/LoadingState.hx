@@ -33,21 +33,19 @@ class LoadingState extends MusicBeatState {
     private static var targetState:FlxState;
 	private static var assetsToCache:Array<AssetTracker> = [];
 
-    private static function getAssetsInLibrary(library:String = null) {
-        if (library != null) {
-            for (type in allAssetTypes) {
-                for (asset in FlxG.assets.list(type)) {
-					if (asset.startsWith('assets/$library/'))
-					{
-                        #if debug
-                        trace('Adding "$asset" to cache list!');
-                        #end
+    private static function getAssetsInLibrary(library:String) {
+        for (type in allAssetTypes) {
+            for (asset in FlxG.assets.list(type)) {
+                if (asset.startsWith('assets/$library/'))
+                {
+                    #if debug
+                    trace('Adding "$asset" to cache list!');
+                    #end
 
-						assetsToCache.push({
-							key: asset,
-							type: type
-						});
-					}
+                    assetsToCache.push({
+                        key: asset,
+                        type: type
+                    });
                 }
             }
         }
@@ -126,12 +124,10 @@ class LoadingState extends MusicBeatState {
 
         new FlxTimer().start(1, (timer) -> {
             if (assetsToCache.length > 0) {
-				var targetAsset:AssetTracker = assetsToCache[assetsToCache.length - 1];
+				var targetAsset:AssetTracker = assetsToCache.pop();
 
 				@:privateAccess
 				FlxG.assets.getAsset('${Resources.selectedLibrary}:${targetAsset.key}', targetAsset.type, true);
-
-				assetsToCache.pop();
                 ++cacheProgress;
 
 				#if debug

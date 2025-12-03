@@ -136,7 +136,7 @@ class LoadingState extends MusicBeatState {
 				trace('Cached Asset: ${targetAsset.key}');
 				#end
 
-				timer.reset(FlxG.elapsed);
+				timer.reset(FlxG.maxElapsed);
             } else {
                 timer.destroy();
 				FlxG.switchState(() -> targetState);

@@ -28,7 +28,7 @@ class Resources {
             return null;
 
         if (selectedLibrary != null) {
-			Assets.cache.clear('assets/$selectedLibrary/');
+			Assets.cache.clear(selectedLibrary);
 			Assets.unloadLibrary(selectedLibrary);
 
             LoadingState.lastCachedLibrary = null;

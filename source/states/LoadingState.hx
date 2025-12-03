@@ -108,7 +108,7 @@ class LoadingState extends MusicBeatState {
         add(progressBar);
 
 		currentCacheText = new FlxText(progressBar.x, progressBar.y + progressBar.height, progressBar.width, "Waiting...", 16);
-        currentCacheText.setFormat(null, 16, FlxColor.WHITE, FlxTextAlign.LEFT);
+        currentCacheText.setFormat(null, 16, FlxColor.BLACK, FlxTextAlign.LEFT);
         add(currentCacheText);
 
         super.create();

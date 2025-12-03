@@ -366,7 +366,7 @@ class ChartingState extends MusicBeatState
         if (Conductor.songPosition >= sectionStartTime() + (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)) {
             trace('Moving to next section!');
             changeSection(curSection + 1);
-        } else if (Conductor.songPosition < sectionStartTime()) {
+        } else if (Conductor.songPosition < sectionStartTime() - 20) {
 			if (_song.notes[curSection - 1] != null) {
 				trace('Moving to previous section!');
 				changeSection(curSection - 1);

@@ -18,8 +18,10 @@ class Resources {
 
     /**
      * Change the Library to be loaded, and clear cache.
-     * Warning! This returns a Future! Assets in the library are not immediately loaded,
-     * so if you need an asset immediately, RUN A CHECK FIRST!
+     * Warning! This returns a Future! Assets in the library are not immediately loaded.
+     * 
+     * Manually use `Assets.loadLibrary` if you want to use multiple libraries. This changes the global library.
+     * 
      * @param name Library Name
      * @return Future<AssetLibrary>
      */

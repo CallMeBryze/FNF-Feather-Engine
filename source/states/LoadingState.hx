@@ -20,6 +20,8 @@ typedef AssetTracker = {
 }
 
 class LoadingState extends MusicBeatState {
+    private final defaultCacheProgressText:String = "Waiting...";
+
     public static final allAssetTypes:Array<FlxAssetType> = [
         IMAGE,
         SOUND,
@@ -53,6 +55,11 @@ class LoadingState extends MusicBeatState {
 
     public static var lastCachedLibrary:String;
 
+    /**
+     * Self explanatory, isn't it?
+     * @param state State to load.
+     * @param library Global Library to load.
+     */
     public static function loadAndSwitchState(state:FlxState, ?library:String = null):Void {
         assetsToCache = [];
 
@@ -107,7 +114,7 @@ class LoadingState extends MusicBeatState {
         progressBar.y = FlxG.height - (progressBar.height + 32);
         add(progressBar);
 
-		currentCacheText = new FlxText(progressBar.x, progressBar.y + progressBar.height, progressBar.width, "Waiting...", 16);
+		currentCacheText = new FlxText(progressBar.x, progressBar.y + progressBar.height, progressBar.width, defaultCacheProgressText, 16);
         currentCacheText.setFormat(null, 16, FlxColor.BLACK, FlxTextAlign.LEFT);
         add(currentCacheText);
 
@@ -118,8 +125,6 @@ class LoadingState extends MusicBeatState {
         new FlxTimer().start(1, (timer) -> {
             if (assetsToCache.length > 0) {
 				var targetAsset:AssetTracker = assetsToCache[assetsToCache.length - 1];
-
-				currentCacheText.text = targetAsset.key;
 
 				@:privateAccess
 				FlxG.assets.getAsset('${Resources.selectedLibrary}:${targetAsset.key}', targetAsset.type, true);
@@ -141,6 +146,10 @@ class LoadingState extends MusicBeatState {
 
     override public function update(elapsed:Float):Void {
         super.update(elapsed);
+
+		if (transOutFinished && currentCacheText.text == defaultCacheProgressText && assetsToCache[assetsToCache.length - 1] != null) {
+			currentCacheText.text = assetsToCache[assetsToCache.length - 1].key;
+        }
 
         if (assetsToCache.length <= 0) {
 			FlxG.switchState(() -> targetState);

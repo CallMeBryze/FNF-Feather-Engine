@@ -18,6 +18,8 @@ class TitleState extends MusicBeatState {
         if (!initialized) {
             FlxG.save.bind('featherEngine', 'CallMeBryze');
 
+            FlxG.autoPause = false; // disgusting.
+
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
@@ -35,6 +37,6 @@ class TitleState extends MusicBeatState {
 
         super.create();
 
-        FlxG.switchState(() -> new PlayState());
+        LoadingState.loadAndSwitchState(new PlayState());
     }
 }

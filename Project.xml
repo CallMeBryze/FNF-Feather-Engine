@@ -33,6 +33,7 @@
 	<set name="BUILD_DIR" value="export/debug" if="debug"/>
 	<source path="source" />
 
+    <library name="default" preload="true"/> <!--Shouldn't have to define this for shared I think-->
 	<assets path="assets/shared" rename="assets"/>
 
     <library name="week1" preload="false"/>

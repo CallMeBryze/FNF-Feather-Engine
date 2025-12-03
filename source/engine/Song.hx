@@ -3,6 +3,8 @@ package engine;
 typedef Song = {
     var song:String;
     var bpm:Float;
+
+	var scrollSpeed:Float;
     var defaultLengthInSteps:Int;
 
     var stage:String;

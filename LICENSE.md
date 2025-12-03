@@ -10,6 +10,7 @@ You can view the `funkin-assets` license here: (https://github.com/FunkinCrew/fu
 ## Assets
 
 CallMeBryze does not own or claim to own the assets used from Friday Night Funkin'.
+Keep in mind that Friday Night Funkin's assets fall under a different [license]((https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md)).
 
 # Feather Engine
 

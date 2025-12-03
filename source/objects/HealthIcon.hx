@@ -34,7 +34,7 @@ class HealthIcon extends FlxSprite
         flipX = isPlayer;
 
         if (linkedHealthBar != null && animation.curAnim != null) {
-            if (linkedHealthBar.value < 0.4) {
+            if (isPlayer && linkedHealthBar.value < 0.4 || !isPlayer && linkedHealthBar.value > (1 - 0.4)) {
                 switch (type) {
                     default:
                         animation.play('dying');

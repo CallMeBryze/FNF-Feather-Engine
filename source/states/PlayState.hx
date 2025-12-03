@@ -1,7 +1,9 @@
 package states;
 
+import engine.Conductor;
 import engine.Resources;
 import engine.Song;
+import engine.VocalGroup;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -10,6 +12,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.sound.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import objects.Character;
@@ -37,14 +40,18 @@ class PlayState extends MusicBeatState
 
     public static var _song:Song = {
         song: "test",
-        bpm: 120,
+        bpm: 150,
         stage: "stage",
         player: "bf",
         opponent: "dad",
         dancer: "girlfriend",
         notes: [],
-        defaultLengthInSteps: 16
+        defaultLengthInSteps: 16,
+        scrollSpeed: 1.2
     };
+
+	private var inst:FlxSound;
+	private var vocals:VocalGroup;
 
     // Stage Layers
 	private var stageLayerBack:FlxGroup = new FlxGroup();
@@ -62,6 +69,28 @@ class PlayState extends MusicBeatState
 		hudCam = new FlxCamera();
 		hudCam.bgColor = FlxColor.TRANSPARENT;
 		FlxG.cameras.add(hudCam, false);
+
+		inst = Resources.getAudio('songs/${_song.song}/Inst');
+		vocals = new VocalGroup(inst);
+
+		inst.autoDestroy = false;
+
+		var playerVocals:FlxSound = Resources.getAudio('songs/${_song.song}/Vocals-Player');
+		var opponentVocals:FlxSound = Resources.getAudio('songs/${_song.song}/Vocals-Opponent');
+
+		playerVocals.autoDestroy = false;
+		opponentVocals.autoDestroy = false;
+
+		vocals.add(playerVocals, 'player');
+		vocals.add(opponentVocals, 'opponent');
+
+		inst.play();
+		inst.pause();
+
+        Conductor.songPosition = 0;
+
+        Conductor.changeBPM(_song.bpm);
+        Conductor.mapBPMChanges(_song);
 
 		super.create();
 
@@ -139,6 +168,9 @@ class PlayState extends MusicBeatState
         }
 
 		super.update(elapsed);
+
+        inst.update(elapsed);
+        vocals.update(elapsed);
 
         if (!player.busy && player.animation.finished)
             player.dance();

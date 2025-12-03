@@ -3,6 +3,8 @@
     "noteArrowsPath": "ui/notes/notes",
     "noteHoldsPath": "ui/notes/noteHolds",
 
+    "scale": 0.7,
+
     "antialiasing": true,
     "strumOffsets": [
         {

@@ -9,10 +9,21 @@ import haxe.Json;
 import objects.arrows.Note;
 import states.PlayState;
 
+enum StrumlineType {
+    CPU;
+    PLAYER;
+}
+
 class Strumline extends FlxSpriteContainer {
     public var strums:Array<StrumRow> = [];
 
-    override public function new(x:Float, y:Float) {
+    public var type:StrumlineType;
+    public var character:Character;
+
+    override public function new(x:Float, y:Float, ?character:Character, ?type:StrumlineType = CPU) {
+        this.type = type;
+        this.character = character;
+
         super(x, y);
 
         for (i in 0...4) {
@@ -61,7 +72,7 @@ class StrumNote extends FlxSprite
 		antialiasing = properties.antialiasing;
 
 		frames = PlayState.strumAtlas.sparrow;
-		scale.set(0.7, 0.7);
+		scale.set(properties.scale, properties.scale);
 		updateHitbox();
 
 		var directionStr:String;

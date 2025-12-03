@@ -3,6 +3,7 @@ package engine;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.sound.FlxSound;
 import haxe.io.Path;
 import openfl.Assets;
 import openfl.display.BitmapData;
@@ -10,6 +11,7 @@ import openfl.utils.AssetCache;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetType;
 import openfl.utils.Future;
+import states.LoadingState;
 
 class Resources {
     private static var selectedLibrary:String = null;
@@ -22,9 +24,14 @@ class Resources {
      * @return Future<AssetLibrary>
      */
     public static function changeLibrary(name:String):Future<AssetLibrary> {
+        if (name == 'default')
+            return null;
+
         if (selectedLibrary != null) {
-			Assets.cache.clear(selectedLibrary);
+			Assets.cache.clear('assets/$selectedLibrary/');
 			Assets.unloadLibrary(selectedLibrary);
+
+            LoadingState.lastCachedLibrary = null;
         }
 
         selectedLibrary = name;
@@ -57,12 +64,30 @@ class Resources {
 		if (library != null && existsInLibrary('images/$path.png', library))
 			key = Path.normalize('$library:assets/$library/images/$path.png');
 
-        var graphic:FlxGraphic;
-        graphic = FlxGraphic.fromBitmapData(Assets.getBitmapData(key));
+        var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key);
         graphic.persist = true;
 
         return graphic;
     }
+
+	/**
+	 * Retrieve Audio from a path.
+	 * @param path Starts in the `assets/audio` directory. Automatically adds the `.ogg` extension at the end.
+	 * @param library Library to access.
+	 */
+	public static function getAudio(path:String, ?library:String = null):FlxSound
+	{
+		if (library == null)
+			library = selectedLibrary;
+
+		var key:String = Path.normalize('assets/audio/$path.ogg');
+		if (library != null && existsInLibrary('audio/$path.ogg', library))
+			key = Path.normalize('$library:assets/$library/audio/$path.ogg');
+
+        var sound:FlxSound = new FlxSound().loadEmbedded(FlxG.assets.getSound(key));
+
+		return sound;
+	}
 
     /**
      * Retrieve Text File Contents from a path.

@@ -14,6 +14,8 @@ typedef NoteStyle = {
     var noteArrowsPath:String;
     var noteHoldsPath:String;
 
+    var scale:Float;
+
     var antialiasing:Bool;
     var strumOffsets:Array<NoteAnimationOffsets>;
 }
@@ -38,6 +40,12 @@ class Note extends FlxSprite {
     public var strumTime:Float;
     public var prevNote:Note;
 
+    /**
+     * Does not store the value of the sustain note's width.
+     * Is used to for centering sustain notes.
+     */
+    private var noteFrameWidth:Int = 0;
+
     override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?sustainLength:Float = 0, ?prevNote:Note = null) {
 		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
 
@@ -61,8 +69,6 @@ class Note extends FlxSprite {
         antialiasing = properties.antialiasing;
 
 		frames = PlayState.arrowAtlas.sparrow;
-        scale.set(0.7, 0.7);
-        updateHitbox();
 
         addAnim("noteLEFT", "noteLeft");
         addAnim("noteUP", "noteUp");
@@ -79,19 +85,24 @@ class Note extends FlxSprite {
 		addAnim("sustainDOWNend", "sustainDownEnd");
 		addAnim("sustainRIGHTend", "sustainRightEnd");
 
-        if (!isSustain) {
-			switch (direction)
-			{
-				case LEFT:
-					animation.play("noteLEFT");
-				case UP:
-					animation.play("noteUP");
-				case DOWN:
-					animation.play("noteDOWN");
-				case RIGHT:
-					animation.play("noteRIGHT");
-			}
-        } else {
+		switch (direction)
+		{
+			case LEFT:
+				animation.play("noteLEFT");
+			case DOWN:
+				animation.play("noteDOWN");
+			case UP:
+				animation.play("noteUP");
+			case RIGHT:
+				animation.play("noteRIGHT");
+		}
+
+        noteFrameWidth = this.frameWidth;
+
+		scale.set(properties.scale, properties.scale);
+		updateHitbox();
+
+        if (isSustain) {
             scoreMultiplier = 0.2;
 
             if (prevNote != null) {
@@ -99,10 +110,10 @@ class Note extends FlxSprite {
 				{
 					case LEFT:
 						animation.play("sustainLEFTend");
-					case UP:
-						animation.play("sustainUPend");
 					case DOWN:
 						animation.play("sustainDOWNend");
+					case UP:
+						animation.play("sustainUPend");
 					case RIGHT:
 						animation.play("sustainRIGHTend");
 				}
@@ -111,14 +122,16 @@ class Note extends FlxSprite {
 				{
 					case LEFT:
 						animation.play("sustainLEFTpiece");
-					case UP:
-						animation.play("sustainUPpiece");
 					case DOWN:
 						animation.play("sustainDOWNpiece");
+					case UP:
+						animation.play("sustainUPpiece");
 					case RIGHT:
 						animation.play("sustainRIGHTpiece");
 				}
             }
+
+            offset.x += ((noteFrameWidth * properties.scale) / 2) - (this.width / 2);
         }
     }
 
@@ -131,9 +144,9 @@ class Note extends FlxSprite {
         switch (direction) {
             case LEFT:
                 return 0;
-            case UP:
-                return 1;
             case DOWN:
+                return 1;
+            case UP:
                 return 2;
             case RIGHT:
                 return 3;
@@ -147,9 +160,9 @@ class Note extends FlxSprite {
             case 0:
                 return LEFT;
             case 1:
-                return UP;
-            case 2:
                 return DOWN;
+            case 2:
+                return UP;
             case 3:
                 return RIGHT;
         }

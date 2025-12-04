@@ -1,31 +1,27 @@
 package objects.arrows;
 
+import engine.Conductor;
+import engine.Conductor;
 import engine.Resources;
+import engine.Song.SectionNote;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteContainer;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import haxe.Json;
 import objects.arrows.Note;
 import states.PlayState;
 
-enum StrumlineType {
-    CPU;
-    PLAYER;
-}
-
 class Strumline extends FlxSpriteContainer {
-    public var strums:Array<StrumRow> = [];
+    public var strums:FlxTypedGroup<StrumNote> = new FlxTypedGroup();
 
-    public var type:StrumlineType;
-    public var character:Character;
-
-    override public function new(x:Float, y:Float, ?character:Character, ?type:StrumlineType = CPU) {
-        this.type = type;
-        this.character = character;
-
+    override public function new(x:Float, y:Float) {
         super(x, y);
 
+        var lastStrum:StrumNote = null;
         for (i in 0...4) {
             var direction:NoteDirection = LEFT;
 
@@ -39,11 +35,16 @@ class Strumline extends FlxSpriteContainer {
                 case 3:
 					direction = RIGHT;
             }
+			
+            var startX:Float = 0;
+            if (lastStrum != null)
+                startX = lastStrum.width;
 
-			var strumRow = new StrumRow((Note.defaultNoteWidth * 0.7) * i, 0, direction, i);
+            var strumNote:StrumNote = new StrumNote((startX * 0.7) * i, 0, direction);
+			add(strumNote);
 
-            strums.push(strumRow);
-            add(strumRow);
+            lastStrum = strumNote;
+            strums.add(strumNote);
         }
     }
 }
@@ -52,6 +53,8 @@ class StrumNote extends FlxSprite
 {
 	private var properties:NoteStyle;
 	private var offsets:Map<String, FlxPoint> = new Map();
+
+    public var notes:Array<Note> = [];
 
 	override public function new(x:Float, y:Float, direction:NoteDirection = LEFT)
 	{
@@ -95,56 +98,39 @@ class StrumNote extends FlxSprite
 		playAnim("static");
 	}
 
-	public function playAnim(name:String = 'static', ?force:Bool = false):Void
-	{
+    override function update(elapsed:Float):Void {
+        super.update(elapsed);
+
+        if (animation.finished) {
+            switch(getCurrentAnimation()) {
+                default:
+					playAnim('static');
+            }
+        }
+    }
+
+	public function playAnim(name:String = 'static', ?force:Bool = false):Void {
 		animation.play(name, force);
 
 		this.centerOffsets();
+		this.centerOrigin();
 
 		if (offsets.exists(getCurrentAnimation())) {
 			var swagOffsets:FlxPoint = offsets.get(getCurrentAnimation());
 
 			this.offset.x += swagOffsets.x;
 			this.offset.y += swagOffsets.y;
-		} else {
-			this.centerOrigin();
 		}
 	}
 
-	private function addAnim(name:String, prefix:String, ?loop:Bool = false):Void
-	{
+	private function addAnim(name:String, prefix:String, ?loop:Bool = false):Void {
 		animation.addByPrefix(name, prefix, 24, loop);
 	}
 
-	public function getCurrentAnimation():String
-	{
+	public function getCurrentAnimation():String {
 		if (this.animation == null || this.animation.curAnim == null)
 			return "";
 
 		return this.animation.curAnim.name;
 	}
-}
-
-class StrumRow extends FlxSpriteContainer {
-    private var notes:Array<Note> = [];
-    private var strumNote:StrumNote;
-
-    public var direction:NoteDirection;
-
-    override public function new (x:Float, y:Float, direction:NoteDirection, id:Int) {
-        super(x, y);
-
-        this.ID = id;
-        this.direction = direction;
-
-		strumNote = new StrumNote(0, 0, direction);
-        add(strumNote);
-    }
-}
-
-enum PressType {
-    NONE;
-    JUST_PRESSED;
-    PRESSED;
-    RELEASED;
 }

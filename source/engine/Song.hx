@@ -42,7 +42,12 @@ typedef SectionNote = {
     var sustainLength:Float;
 }
 
-enum SectionType {
+enum HitType {
     PLAYER;
     OPPONENT;
+}
+
+typedef SectionWithIdentifier = {
+    var notes:Array<SectionNote>;
+    var type:HitType;
 }

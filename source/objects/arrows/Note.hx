@@ -1,12 +1,15 @@
 package objects.arrows;
 
+import engine.Conductor;
 import engine.Resources;
+import engine.Song.HitType;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.math.FlxPoint;
 import haxe.Json;
+import objects.arrows.Strumline.StrumNote;
 import states.PlayState;
 
 typedef NoteStyle = {
@@ -27,26 +30,28 @@ typedef NoteAnimationOffsets = {
 }
 
 class Note extends FlxSprite {
+    @:deprecated
     public static final defaultNoteWidth:Int = 150;
 
     private var properties:NoteStyle;
 
     public var direction:NoteDirection;
     public var isSustain:Bool = false;
-    public var sustainLength:Float = 0;
 
 	public var scoreMultiplier:Float = 1;
+    public var noteFocus:HitType = OPPONENT;
 
     public var strumTime:Float;
+    public var sustainLength:Float;
+
+    public var strumParent:StrumNote;
     public var prevNote:Note;
 
-    /**
-     * Does not store the value of the sustain note's width.
-     * Is used to for centering sustain notes.
-     */
-    private var noteFrameWidth:Int = 0;
+    public var wasHit:Bool = false;
+    public var canBeHit:Bool = false;
+    public var tooLate:Bool = false;
 
-    override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?sustainLength:Float = 0, ?prevNote:Note = null) {
+    override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?prevNote:Note = null) {
 		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
 
 		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != properties.noteArrowsPath)) {
@@ -60,7 +65,6 @@ class Note extends FlxSprite {
 
         this.isSustain = isSustain;
         this.prevNote = prevNote;
-        this.sustainLength = sustainLength;
 
         super(x, y);
 
@@ -97,29 +101,33 @@ class Note extends FlxSprite {
 				animation.play("noteRIGHT");
 		}
 
-        noteFrameWidth = this.frameWidth;
-
 		scale.set(properties.scale, properties.scale);
 		updateHitbox();
 
-        if (isSustain) {
+		if (isSustain && prevNote != null) {
             scoreMultiplier = 0.2;
 
-            if (prevNote != null) {
-				switch (direction)
-				{
-					case LEFT:
-						animation.play("sustainLEFTend");
-					case DOWN:
-						animation.play("sustainDOWNend");
-					case UP:
-						animation.play("sustainUPend");
-					case RIGHT:
-						animation.play("sustainRIGHTend");
-				}
-            } else {
-				switch (direction)
-				{
+			switchSustainAnimation(false, direction);
+        }
+    }
+
+    override function update(elapsed):Void {
+        super.update(elapsed);
+
+		if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) {
+			canBeHit = true;
+		} else {
+			canBeHit = false;
+        }
+
+		if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset)
+			tooLate = true;
+    }
+
+    public function switchSustainAnimation(isEndPiece:Bool, direction:NoteDirection):Void {
+        switch (isEndPiece) {
+            case false:
+                switch (direction) {
 					case LEFT:
 						animation.play("sustainLEFTpiece");
 					case DOWN:
@@ -129,10 +137,27 @@ class Note extends FlxSprite {
 					case RIGHT:
 						animation.play("sustainRIGHTpiece");
 				}
-            }
 
-            offset.x += ((noteFrameWidth * properties.scale) / 2) - (this.width / 2);
+                if (prevNote.isSustain) {
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState._songData.scrollSpeed;
+					prevNote.updateHitbox();
+                }
+
+            case true:
+                switch (direction) {
+                    case LEFT:
+                        animation.play("sustainLEFTend");
+                    case DOWN:
+                        animation.play("sustainDOWNend");
+                    case UP:
+                        animation.play("sustainUPend");
+                    case RIGHT:
+                        animation.play("sustainRIGHTend");
+                }
         }
+
+		updateHitbox();
+		offset.y -= height;
     }
 
 	private function addAnim(name:String, prefix:String):Void

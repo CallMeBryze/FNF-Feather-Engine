@@ -116,7 +116,7 @@ class LoadingState extends MusicBeatState {
     override public function create():Void {
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage("funkay"));
 		bg.antialiasing = true;
-		bg.setGraphicSize(900);
+		bg.setGraphicSize(1280);
         bg.updateHitbox();
         bg.screenCenter(XY);
 		add(bg);
@@ -133,8 +133,6 @@ class LoadingState extends MusicBeatState {
         add(currentCacheText);
 
         super.create();
-
-		camera.bgColor = FlxColor.fromRGB(202, 255, 77);
 
         new FlxTimer().start(1, (timer) -> {
             if (assetsToCache.length > 0) {

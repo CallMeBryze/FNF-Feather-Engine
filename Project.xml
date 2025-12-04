@@ -33,6 +33,9 @@
 	<set name="BUILD_DIR" value="export/debug" if="debug"/>
 	<source path="source" />
 
+    <library name="default" preload="false" />
+    <assets path="assets/default" library="default"/>
+
     <library name="shared" preload="true"/>
 	<assets path="assets/shared" library="shared"/>
 

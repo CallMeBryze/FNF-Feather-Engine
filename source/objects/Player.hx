@@ -7,6 +7,8 @@ class Player extends Character {
     private var deathConfirmEvent:Void->Void;
 
     override public function new (x:Float, y:Float, character:String) {
+        isPlayer = true;
+
         super(x, y, character);
 
 		this.flipX = !this.flipX;

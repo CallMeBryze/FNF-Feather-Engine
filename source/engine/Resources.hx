@@ -26,7 +26,7 @@ class Resources {
      * @return Future<AssetLibrary>
      */
     public static function changeLibrary(name:String):Future<AssetLibrary> {
-        if (name == 'shared')
+        if (name == 'shared' || name == 'default')
             return null;
 
         if (selectedLibrary != null) {
@@ -59,15 +59,27 @@ class Resources {
      */
     public static function getImage(path:String, ?library:String = null):FlxGraphic
     {
+        var persist:Bool = false;
+
         if (library == null)
             library = selectedLibrary;
 
-		var key:String = Path.normalize('shared:assets/shared/images/$path.png');
-		if (library != null && existsInLibrary('images/$path.png', library))
+		var key:String = Path.normalize('default:assets/default/images/$path.png');
+		if (library != null && existsInLibrary('images/$path.png', library)) {
 			key = Path.normalize('$library:assets/$library/images/$path.png');
 
+            // Have to do this because we're sort of manually handling graphics with this.
+            if (library == selectedLibrary)
+                persist = true;
+        }
+        else if (existsInLibrary('images/$path.png', 'shared')) {
+			key = Path.normalize('shared:assets/shared/images/$path.png');
+            persist = true;
+        }
+
         var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key);
-        graphic.persist = true;
+        graphic.destroyOnNoUse = false;
+        graphic.persist = persist;
 
         return graphic;
     }
@@ -82,9 +94,11 @@ class Resources {
 		if (library == null)
 			library = selectedLibrary;
 
-		var key:String = Path.normalize('shared:assets/shared/audio/$path.ogg');
+		var key:String = Path.normalize('default:assets/default/audio/$path.ogg');
 		if (library != null && existsInLibrary('audio/$path.ogg', library))
 			key = Path.normalize('$library:assets/$library/audio/$path.ogg');
+		else if (existsInLibrary('audio/$path.ogg', 'shared'))
+			key = Path.normalize('shared:assets/shared/audio/$path.ogg');
 
         var sound:FlxSound = new FlxSound().loadEmbedded(FlxG.assets.getSound(key));
 
@@ -102,9 +116,11 @@ class Resources {
 		if (library == null)
 			library = selectedLibrary;
 
-        var key:String = Path.normalize('shared:assets/shared/$path.$ext');
+        var key:String = Path.normalize('default:assets/default/$path.$ext');
 		if (library != null && existsInLibrary('$path.$ext', library))
 			key = Path.normalize('$library:assets/$library/$path.$ext');
+		else if (existsInLibrary('$path.$ext', 'shared'))
+			key = Path.normalize('shared:assets/shared/$path.$ext');
 
         return Assets.getText(key);
     }
@@ -120,20 +136,24 @@ class Resources {
 		if (library == null)
 			library = selectedLibrary;
 
-        var key:String = Path.normalize('shared:assets/shared/$path');
+        var key:String = Path.normalize('default:assets/default/$path');
         if (library != null && existsInLibrary(path, library))
 			key = Path.normalize('$library:assets/$library/$path');
+		else if (existsInLibrary(path, 'shared'))
+			key = Path.normalize('shared:assets/shared/$path');
 
         return Assets.exists(key, type);
     }
 
     /**
-     * @param path Starts in the `assets/images` directory. Do not include an extension.
+     * @param path Starts in the `images` directory. Do not include an extension.
+     * @param persist Refer to `getImage()`.
+     * @param library Refer to `getImage()`.
      * @return FlxAtlasFrames
      */
-    public static function getSparrowAtlas(path:String):FlxAtlasFrames
+	public static function getSparrowAtlas(path:String, ?library:String = null):FlxAtlasFrames
     {
-        return FlxAtlasFrames.fromSparrow(getImage('$path'), getTxt('images/$path', 'xml'));
+        return FlxAtlasFrames.fromSparrow(getImage('$path', library), getTxt('images/$path', 'xml', library));
     }
 }
 

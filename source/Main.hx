@@ -16,7 +16,7 @@ class Main extends Sprite
 
 		Assets.loadLibrary("shared");
 
-		addChild(new FlxGame(0, 0, InitialState, 240, 240));
+		addChild(new FlxGame(0, 0, InitialState, 144, 144));
         FlxSprite.defaultAntialiasing = false;
 	}
 }

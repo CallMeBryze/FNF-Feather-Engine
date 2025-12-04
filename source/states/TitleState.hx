@@ -1,5 +1,6 @@
 package states;
 
+import engine.GameUtil;
 import engine.Resources;
 import flixel.FlxG;
 import flixel.FlxState;
@@ -35,7 +36,6 @@ class TitleState extends MusicBeatState {
 
         super.create();
 
-        PlayState._song = Json.parse(Resources.getTxt("data/charts/test/test-normal", "json"));
-        LoadingState.loadAndSwitchState(new PlayState());
+        GameUtil.loadSongAndPlay('test', 'week1');
     }
 }

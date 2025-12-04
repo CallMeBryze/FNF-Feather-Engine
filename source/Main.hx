@@ -4,6 +4,8 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxSprite;
 import openfl.display.Sprite;
+import openfl.utils.Assets;
+import states.LoadingState;
 import states.TitleState;
 
 class Main extends Sprite
@@ -12,7 +14,9 @@ class Main extends Sprite
 	{
 		super();
 
-		addChild(new FlxGame(0, 0, TitleState, 240, 240));
+		Assets.loadLibrary("shared");
+
+		addChild(new FlxGame(0, 0, InitialState, 240, 240));
         FlxSprite.defaultAntialiasing = false;
 	}
 }

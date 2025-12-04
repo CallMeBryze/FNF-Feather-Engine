@@ -26,7 +26,7 @@ class Resources {
      * @return Future<AssetLibrary>
      */
     public static function changeLibrary(name:String):Future<AssetLibrary> {
-        if (name == 'default')
+        if (name == 'shared')
             return null;
 
         if (selectedLibrary != null) {
@@ -54,7 +54,7 @@ class Resources {
 
     /**
      * Retrieve the Bitmap Data from a path.
-     * @param path Starts in the `assets/images` directory. Automatically adds the `.png` extension at the end.
+	 * @param path Starts in the `assets/[library]/images` directory. Automatically adds the `.png` extension at the end.
      * @param library Library to access.
      */
     public static function getImage(path:String, ?library:String = null):FlxGraphic
@@ -62,7 +62,7 @@ class Resources {
         if (library == null)
             library = selectedLibrary;
 
-		var key:String = Path.normalize('assets/images/$path.png');
+		var key:String = Path.normalize('shared:assets/shared/images/$path.png');
 		if (library != null && existsInLibrary('images/$path.png', library))
 			key = Path.normalize('$library:assets/$library/images/$path.png');
 
@@ -74,7 +74,7 @@ class Resources {
 
 	/**
 	 * Retrieve Audio from a path.
-	 * @param path Starts in the `assets/audio` directory. Automatically adds the `.ogg` extension at the end.
+	 * @param path Starts in the `assets/[library]/audio` directory. Automatically adds the `.ogg` extension at the end.
 	 * @param library Library to access.
 	 */
 	public static function getAudio(path:String, ?library:String = null):FlxSound
@@ -82,7 +82,7 @@ class Resources {
 		if (library == null)
 			library = selectedLibrary;
 
-		var key:String = Path.normalize('assets/audio/$path.ogg');
+		var key:String = Path.normalize('shared:assets/shared/audio/$path.ogg');
 		if (library != null && existsInLibrary('audio/$path.ogg', library))
 			key = Path.normalize('$library:assets/$library/audio/$path.ogg');
 
@@ -102,7 +102,7 @@ class Resources {
 		if (library == null)
 			library = selectedLibrary;
 
-        var key:String = Path.normalize('assets/$path.$ext');
+        var key:String = Path.normalize('shared:assets/shared/$path.$ext');
 		if (library != null && existsInLibrary('$path.$ext', library))
 			key = Path.normalize('$library:assets/$library/$path.$ext');
 
@@ -110,7 +110,7 @@ class Resources {
     }
 
     /**
-     * @param path Starts in the `assets` directory.
+     * @param path Starts in the default libraries directory.
      * @param library String
      * @param type AssetType
      * @return Bool
@@ -120,7 +120,7 @@ class Resources {
 		if (library == null)
 			library = selectedLibrary;
 
-        var key:String = Path.normalize('assets/$path');
+        var key:String = Path.normalize('shared:assets/shared/$path');
         if (library != null && existsInLibrary(path, library))
 			key = Path.normalize('$library:assets/$library/$path');
 

@@ -34,16 +34,18 @@ class LoadingState extends MusicBeatState {
 	private static var assetsToCache:Array<AssetTracker> = [];
 
     private static function getAssetsInLibrary(library:String) {
+        var startingDir:String = 'assets/$library/';
+
         for (type in allAssetTypes) {
             for (asset in FlxG.assets.list(type)) {
-                if (asset.startsWith('assets/$library/'))
+                if (asset.startsWith(startingDir))
                 {
                     #if debug
                     trace('Adding "$asset" to cache list!');
                     #end
 
                     assetsToCache.push({
-                        key: asset,
+                        key: '$library:$asset',
                         type: type
                     });
                 }
@@ -92,6 +94,18 @@ class LoadingState extends MusicBeatState {
         }
     }
 
+    override public function new(?prepareGame:Bool = false, ?target:FlxState) {
+        super();
+
+        if (target != null) {
+			targetState = target;
+        }
+
+        if (prepareGame) {
+            getAssetsInLibrary('shared');
+        }
+    }
+
     private var progressBar:FlxBar;
     private var currentCacheText:FlxText;
 
@@ -126,8 +140,12 @@ class LoadingState extends MusicBeatState {
             if (assetsToCache.length > 0) {
 				var targetAsset:AssetTracker = assetsToCache.pop();
 
-				@:privateAccess
-				FlxG.assets.getAsset('${Resources.selectedLibrary}:${targetAsset.key}', targetAsset.type, true);
+                try {
+					FlxG.assets.getAsset(targetAsset.key, targetAsset.type, true);
+                } catch (e:Dynamic) {
+                    trace('Error! ($e)');
+                }
+
                 ++cacheProgress;
 
 				#if debug
@@ -149,10 +167,6 @@ class LoadingState extends MusicBeatState {
 			currentCacheText.text = assetsToCache[assetsToCache.length - 1].key;
         } else {
             currentCacheText.text = "Finished!";
-        }
-
-        if (assetsToCache.length <= 0) {
-			FlxG.switchState(() -> targetState);
         }
     }
 }

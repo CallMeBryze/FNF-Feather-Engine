@@ -1,5 +1,6 @@
 package states;
 
+import engine.Resources;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -9,6 +10,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
+import haxe.Json;
 import states.template.MusicBeatState;
 
 class TitleState extends MusicBeatState {
@@ -16,10 +18,6 @@ class TitleState extends MusicBeatState {
 
     override public function create() {
         if (!initialized) {
-            FlxG.save.bind('featherEngine', 'CallMeBryze');
-
-            FlxG.autoPause = false; // disgusting.
-
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
@@ -37,6 +35,7 @@ class TitleState extends MusicBeatState {
 
         super.create();
 
+        PlayState._song = Json.parse(Resources.getTxt("data/charts/test/test-normal", "json"));
         LoadingState.loadAndSwitchState(new PlayState());
     }
 }

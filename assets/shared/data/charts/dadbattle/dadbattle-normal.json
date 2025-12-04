@@ -1,0 +1,733 @@
+{
+	"player": "bf",
+	"notes": [
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
+			"bpm": 180,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [
+				{
+					"strumTime": 11000,
+					"sustainLength": 0,
+					"arrow": 0
+				},
+				{
+					"strumTime": 11166.6666666667,
+					"sustainLength": 0,
+					"arrow": 1
+				},
+				{
+					"strumTime": 10666.6666666667,
+					"sustainLength": 0,
+					"arrow": 3
+				},
+				{
+					"strumTime": 11333.3333333333,
+					"sustainLength": 0,
+					"arrow": 3
+				},
+				{
+					"strumTime": 11666.6666666667,
+					"sustainLength": 0,
+					"arrow": 2
+				},
+				{
+					"strumTime": 11833.3333333333,
+					"sustainLength": 0,
+					"arrow": 1
+				}
+			],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 180,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [
+				{
+					"strumTime": 12000,
+					"sustainLength": 0,
+					"arrow": 0
+				},
+				{
+					"strumTime": 12166.6666666667,
+					"sustainLength": 0,
+					"arrow": 1
+				},
+				{
+					"strumTime": 12333.3333333333,
+					"sustainLength": 0,
+					"arrow": 3
+				},
+				{
+					"strumTime": 12500,
+					"sustainLength": 0,
+					"arrow": 2
+				},
+				{
+					"strumTime": 12666.6666666667,
+					"sustainLength": 0,
+					"arrow": 3
+				},
+				{
+					"strumTime": 13000,
+					"sustainLength": 0,
+					"arrow": 1
+				},
+				{
+					"strumTime": 13166.6666666667,
+					"sustainLength": 0,
+					"arrow": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 180,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [
+				{
+					"strumTime": 13666.6666666667,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 13833.3333333334,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 13333.3333333334,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 14000,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 14333.3333333334,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 14500,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				}
+			],
+			"sectionFocus": 1,
+			"bpm": 180,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [],
+			"lengthInSteps": 16,
+			"playerNotes": [
+				{
+					"strumTime": 14666.6666666667,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 14833.3333333334,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15000,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15166.6666666667,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15333.3333333334,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15666.6666666667,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15833.3333333334,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				}
+			],
+			"sectionFocus": 1,
+			"bpm": 180,
+			"changeBPM": false
+		},
+		{
+			"opponentNotes": [
+				{
+					"strumTime": 16000,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16333.3333333333,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16500,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16666.6666666667,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 17000,
+					"arrow": 1,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 180,
+			"changeBPM": false
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 17333.3333333333,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 17666.6666666667,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 17833.3333333333,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18000,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18166.6666666667,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18333.3333333333,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18500,
+					"arrow": 2,
+					"sustainLength": 0
+				}
+			]
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 18666.6666666667,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 19000,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 19166.6666666667,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 19333.3333333333,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 19666.6666666667,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 20000,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 20333.3333333333,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 20500,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 20666.6666666667,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 20833.3333333333,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 21000,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 21166.6666666667,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 21666.6666666667,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 21833.3333333333,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 22000,
+					"arrow": 0,
+					"sustainLength": 666.666666666667
+				}
+			]
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 22833.3333333333,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 23000,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 23333.3333333333,
+					"arrow": 3,
+					"sustainLength": 500
+				}
+			]
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 24333.3333333333,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 24666.6666666667,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 25000,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 25166.6666666667,
+					"arrow": 3,
+					"sustainLength": 0
+				}
+			]
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 25333.3333333333,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 25500,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 25666.6666666667,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 25833.3333333333,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 26000,
+					"arrow": 2,
+					"sustainLength": 583.333333333333
+				}
+			]
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 27000,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 27166.6666666667,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 27333.3333333333,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 666.666666666667
+				}
+			],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 28166.6666666667,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28333.3333333333,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28666.6666666667,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 500
+				}
+			],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 29666.6666666667,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 30000,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 30333.3333333333,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 30500,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 30666.6666666667,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 30833.3333333333,
+					"arrow": 0,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31000,
+					"arrow": 1,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31166.6666666667,
+					"arrow": 3,
+					"noteType": null,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31333.3333333333,
+					"arrow": 2,
+					"noteType": null,
+					"sustainLength": 583.333333333333
+				}
+			],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 30666.6666666667,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 30833.3333333333,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31000,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31166.6666666667,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31333.3333333333,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31500,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31666.6666666667,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 31833.3333333333,
+					"arrow": 1,
+					"sustainLength": 0
+				}
+			]
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 180,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": [
+				{
+					"strumTime": 33458.3333333333,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 33666.6666666667,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 33833.3333333333,
+					"arrow": 0,
+					"sustainLength": 0
+				}
+			]
+		}
+	],
+	"scrollSpeed": 1.2,
+	"defaultLengthInSteps": 16,
+	"song": "dadbattle",
+	"opponent": "dad",
+	"stage": "stage",
+	"bpm": 180,
+	"dancer": "girlfriend"
+}

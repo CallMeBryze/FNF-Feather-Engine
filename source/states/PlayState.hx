@@ -43,8 +43,8 @@ class PlayState extends MusicBeatState
         bpm: 150,
         stage: "stage",
         player: "bf",
+        dancer: "gf",
         opponent: "dad",
-        dancer: "girlfriend",
         notes: [],
         defaultLengthInSteps: 16,
         scrollSpeed: 1.2

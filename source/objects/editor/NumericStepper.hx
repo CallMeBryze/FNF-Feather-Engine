@@ -8,13 +8,15 @@ class NumericStepper extends FlxUINumericStepper {
     override private function _onPlus():Void {
         super._onPlus();
 
-        onValueChanged(this.value);
+		if (onValueChanged != null)
+            onValueChanged(this.value);
     }
 
 	override private function _onMinus():Void
 	{
 		super._onMinus();
 
-		onValueChanged(this.value);
+        if (onValueChanged != null)
+		    onValueChanged(this.value);
 	}
 }

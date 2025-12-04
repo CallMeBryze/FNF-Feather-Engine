@@ -10,6 +10,20 @@ class VocalGroup extends FlxBasic {
     public var vocals:Map<String, FlxSound> = new Map();
     private var tracks:FlxTypedGroup<FlxSound> = new FlxTypedGroup();
 
+    public var isValid(get, never):Bool;
+
+    private function get_isValid():Bool {
+        var isValid:Bool = true;
+        for (track in tracks) {
+            if (track == null) {
+                isValid = false;
+                break;
+            }
+        }
+
+        return isValid;
+    }
+
     override public function new (tracker:FlxSound) {
         super();
 

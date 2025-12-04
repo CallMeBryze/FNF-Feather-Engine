@@ -21,5 +21,5 @@ I'm not going to actually include any instructions on how to build the game (I'm
 what already comes with HaxeFlixel.
 
 ```txt
-N/A
+flixel-waveform 2.1.2
 ```

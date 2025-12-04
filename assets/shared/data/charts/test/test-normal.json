@@ -1,92 +1,171 @@
 {
+	"player": "bf",
 	"notes": [
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
 			"bpm": 150,
-			"sectionFocus": 0
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
 			"bpm": 150,
-			"sectionFocus": 0
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
 			"bpm": 150,
-			"sectionFocus": 1
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
 			"bpm": 150,
-			"sectionFocus": 1
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
 			"bpm": 150,
-			"sectionFocus": 0
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
 			"bpm": 150,
-			"sectionFocus": 0
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
 			"bpm": 150,
-			"sectionFocus": 1
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [],
-			"changeBPM": false,
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 1,
 			"bpm": 150,
-			"sectionFocus": 1
+			"changeBPM": false
 		},
 		{
-			"playerNotes": [],
-			"lengthInSteps": 16,
 			"opponentNotes": [
 				{
 					"strumTime": 12800,
-					"sustainLength": 0,
-					"arrow": 0
+					"arrow": 0,
+					"sustainLength": 0
 				},
 				{
 					"strumTime": 13200,
-					"sustainLength": 0,
-					"arrow": 1
+					"arrow": 1,
+					"sustainLength": 0
 				},
 				{
 					"strumTime": 13600,
-					"sustainLength": 0,
-					"arrow": 2
+					"arrow": 2,
+					"sustainLength": 0
 				},
 				{
 					"strumTime": 14000,
-					"sustainLength": 0,
-					"arrow": 3
+					"arrow": 3,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"playerNotes": [],
+			"sectionFocus": 0,
+			"bpm": 150,
+			"changeBPM": false
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 14400,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 14800,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15200,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 15600,
+					"arrow": 3,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"opponentNotes": [],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 1
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"opponentNotes": [
+				{
+					"strumTime": 16000,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16200,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16400,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16600,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 16800,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 17000,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 17200,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 17400,
+					"arrow": 3,
+					"sustainLength": 0
 				}
 			],
 			"changeBPM": false,
@@ -94,292 +173,288 @@
 			"sectionFocus": 0
 		},
 		{
-			"opponentNotes": [],
-			"lengthInSteps": 16,
-			"playerNotes": [
-				{
-					"strumTime": 14400,
-					"sustainLength": 0,
-					"arrow": 0
-				},
-				{
-					"strumTime": 14800,
-					"sustainLength": 0,
-					"arrow": 1
-				},
-				{
-					"strumTime": 15200,
-					"sustainLength": 0,
-					"arrow": 2
-				},
-				{
-					"strumTime": 15600,
-					"sustainLength": 0,
-					"arrow": 3
-				}
-			],
-			"sectionFocus": 1,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [
-				{
-					"strumTime": 16000,
-					"sustainLength": 0,
-					"arrow": 0
-				},
-				{
-					"strumTime": 16200,
-					"sustainLength": 0,
-					"arrow": 0
-				},
-				{
-					"strumTime": 16400,
-					"sustainLength": 0,
-					"arrow": 1
-				},
-				{
-					"strumTime": 16600,
-					"sustainLength": 0,
-					"arrow": 1
-				},
-				{
-					"strumTime": 16800,
-					"sustainLength": 0,
-					"arrow": 2
-				},
-				{
-					"strumTime": 17000,
-					"sustainLength": 0,
-					"arrow": 2
-				},
-				{
-					"strumTime": 17200,
-					"sustainLength": 0,
-					"arrow": 3
-				},
-				{
-					"strumTime": 17400,
-					"sustainLength": 0,
-					"arrow": 3
-				}
-			],
-			"lengthInSteps": 16,
-			"playerNotes": [],
-			"sectionFocus": 0,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [],
-			"lengthInSteps": 16,
 			"playerNotes": [
 				{
 					"strumTime": 17600,
-					"sustainLength": 0,
-					"arrow": 0
+					"arrow": 0,
+					"sustainLength": 0
 				},
 				{
 					"strumTime": 17800,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18000,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18200,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18400,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18600,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 18800,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 19000,
+					"arrow": 3,
+					"sustainLength": 0
+				}
+			],
+			"lengthInSteps": 16,
+			"opponentNotes": [],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 1
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"opponentNotes": [
+				{
+					"strumTime": 19200,
+					"sustainLength": 300,
+					"arrow": 0
+				},
+				{
+					"strumTime": 19600,
+					"sustainLength": 300,
+					"arrow": 1
+				},
+				{
+					"strumTime": 20000,
+					"sustainLength": 300,
+					"arrow": 3
+				},
+				{
+					"strumTime": 20400,
+					"sustainLength": 300,
+					"arrow": 2
+				}
+			],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 0
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 20800,
+					"sustainLength": 300,
+					"arrow": 0
+				},
+				{
+					"strumTime": 21200,
+					"sustainLength": 300,
+					"arrow": 1
+				},
+				{
+					"strumTime": 21600,
+					"sustainLength": 300,
+					"arrow": 3
+				},
+				{
+					"strumTime": 22000,
+					"sustainLength": 300,
+					"arrow": 2
+				}
+			],
+			"lengthInSteps": 16,
+			"opponentNotes": [],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 1
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"opponentNotes": [
+				{
+					"strumTime": 22400,
+					"sustainLength": 700,
+					"arrow": 0
+				},
+				{
+					"strumTime": 22800,
+					"sustainLength": 300,
+					"arrow": 1
+				},
+				{
+					"strumTime": 23200,
+					"sustainLength": 700,
+					"arrow": 3
+				},
+				{
+					"strumTime": 23600,
+					"sustainLength": 300,
+					"arrow": 2
+				}
+			],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 0
+		},
+		{
+			"playerNotes": [
+				{
+					"strumTime": 24000,
+					"sustainLength": 800,
+					"arrow": 3
+				},
+				{
+					"strumTime": 24400,
+					"sustainLength": 400,
+					"arrow": 2
+				},
+				{
+					"strumTime": 24900,
+					"sustainLength": 600,
+					"arrow": 0
+				},
+				{
+					"strumTime": 25200,
+					"sustainLength": 300,
+					"arrow": 1
+				}
+			],
+			"lengthInSteps": 16,
+			"opponentNotes": [],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 1
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"opponentNotes": [
+				{
+					"strumTime": 25600,
 					"sustainLength": 0,
 					"arrow": 0
 				},
 				{
-					"strumTime": 18000,
-					"sustainLength": 0,
-					"arrow": 1
-				},
-				{
-					"strumTime": 18200,
-					"sustainLength": 0,
-					"arrow": 1
-				},
-				{
-					"strumTime": 18400,
-					"sustainLength": 0,
-					"arrow": 2
-				},
-				{
-					"strumTime": 18600,
-					"sustainLength": 0,
-					"arrow": 2
-				},
-				{
-					"strumTime": 18800,
+					"strumTime": 26400,
 					"sustainLength": 0,
 					"arrow": 3
 				},
 				{
-					"strumTime": 19000,
-					"sustainLength": 0,
-					"arrow": 3
-				}
-			],
-			"sectionFocus": 1,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [
-				{
-					"strumTime": 19200,
-					"arrow": 0,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 19600,
-					"arrow": 1,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 20000,
-					"arrow": 3,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 20400,
-					"arrow": 2,
-					"sustainLength": 300
-				}
-			],
-			"lengthInSteps": 16,
-			"playerNotes": [],
-			"sectionFocus": 0,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [],
-			"lengthInSteps": 16,
-			"playerNotes": [
-				{
-					"strumTime": 20800,
-					"arrow": 0,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 21200,
-					"arrow": 1,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 21600,
-					"arrow": 3,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 22000,
-					"arrow": 2,
-					"sustainLength": 300
-				}
-			],
-			"sectionFocus": 1,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [
-				{
-					"strumTime": 22400,
-					"arrow": 0,
-					"sustainLength": 700
-				},
-				{
-					"strumTime": 22800,
-					"arrow": 1,
-					"sustainLength": 300
-				},
-				{
-					"strumTime": 23200,
-					"arrow": 3,
-					"sustainLength": 700
-				},
-				{
-					"strumTime": 23600,
-					"arrow": 2,
-					"sustainLength": 300
-				}
-			],
-			"lengthInSteps": 16,
-			"playerNotes": [],
-			"sectionFocus": 0,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [],
-			"lengthInSteps": 16,
-			"playerNotes": [
-				{
-					"strumTime": 24000,
-					"arrow": 3,
-					"sustainLength": 800
-				},
-				{
-					"strumTime": 24400,
-					"arrow": 2,
-					"sustainLength": 400
-				},
-				{
-					"strumTime": 24900,
-					"arrow": 0,
-					"sustainLength": 600
-				},
-				{
-					"strumTime": 25200,
-					"arrow": 1,
-					"sustainLength": 300
-				}
-			],
-			"sectionFocus": 1,
-			"bpm": 150,
-			"changeBPM": false
-		},
-		{
-			"opponentNotes": [
-				{
 					"strumTime": 25600,
-					"arrow": 0,
-					"sustainLength": 0
-				},
-				{
-					"strumTime": 25600,
-					"arrow": 2,
+					"arrow": 1,
 					"sustainLength": 0
 				},
 				{
 					"strumTime": 26400,
+					"arrow": 2,
+					"sustainLength": 0
+				}
+			],
+			"changeBPM": false,
+			"bpm": 150,
+			"sectionFocus": 0
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"opponentNotes": [
+				{
+					"strumTime": 27200,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 27200,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 27600,
+					"arrow": 1,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 27600,
+					"arrow": 2,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28000,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28000,
 					"arrow": 3,
 					"sustainLength": 0
 				},
 				{
-					"strumTime": 26400,
-					"arrow": 1,
+					"strumTime": 28200,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28200,
+					"arrow": 3,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28400,
+					"arrow": 0,
+					"sustainLength": 0
+				},
+				{
+					"strumTime": 28400,
+					"arrow": 3,
 					"sustainLength": 0
 				}
 			],
-			"lengthInSteps": 16,
-			"playerNotes": [],
-			"sectionFocus": 0,
+			"changeBPM": false,
 			"bpm": 150,
-			"changeBPM": false
+			"sectionFocus": 0
 		},
 		{
-			"opponentNotes": [],
-			"lengthInSteps": 16,
 			"playerNotes": [],
-			"sectionFocus": 0,
+			"lengthInSteps": 16,
 			"bpm": 150,
-			"changeBPM": false
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 150,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
+		},
+		{
+			"playerNotes": [],
+			"lengthInSteps": 16,
+			"bpm": 150,
+			"changeBPM": false,
+			"sectionFocus": 0,
+			"opponentNotes": []
 		}
 	],
-	"player": "bf",
 	"scrollSpeed": 1.2,
 	"defaultLengthInSteps": 16,
 	"song": "test",
 	"opponent": "dad",
 	"stage": "stage",
-	"dancer": "girlfriend",
-	"bpm": 150
+	"bpm": 150,
+	"dancer": "girlfriend"
 }

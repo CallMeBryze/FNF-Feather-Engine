@@ -54,7 +54,7 @@ class StrumNote extends FlxSprite
 	private var properties:NoteStyle;
 	private var offsets:Map<String, FlxPoint> = new Map();
 
-    public var notes:Array<Note> = [];
+    public var direction:NoteDirection = LEFT;
 
 	override public function new(x:Float, y:Float, direction:NoteDirection = LEFT)
 	{
@@ -69,6 +69,8 @@ class StrumNote extends FlxSprite
 				sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
 			}
 		}
+
+        this.direction = direction;
 
 		super(x, y);
 
@@ -100,13 +102,6 @@ class StrumNote extends FlxSprite
 
     override function update(elapsed:Float):Void {
         super.update(elapsed);
-
-        if (animation.finished) {
-            switch(getCurrentAnimation()) {
-                default:
-					playAnim('static');
-            }
-        }
     }
 
 	public function playAnim(name:String = 'static', ?force:Bool = false):Void {

@@ -13,8 +13,7 @@ I also made it because I wanted to. Is that not a valid reason alone?
 I'm not including any tutorials or guides on how to use the engine. Please learn Haxe & HaxeFlixel if you want to get started.
 
 ### Is the engine made from scratch?
-Sort of? I reused things like the Conductor, and MusicBeatState from the base-game.
-Specifically an older version of it as I'm more familiar with it.
+Sort of? I reused a fair bit from an old version of the base-game. But I would say a nice 80% is from scratch.
 
 ## Build Instructions
 I'm not going to actually include any instructions on how to build the game (I'm lazy). This is just here to list libraries you'll need apart from

@@ -42,7 +42,6 @@ class SongGroup extends FlxBasic {
                 if (!track.playing)
                     track.play(false, inst.time);
 
-                track.volume = inst.volume;
                 track.pitch = inst.pitch;
 
                 if (inst.time - track.time <= -20 || inst.time - track.time >= 20)
@@ -73,6 +72,7 @@ class SongGroup extends FlxBasic {
 			vocals.set(identifier, sound);
 
 			sound.time = inst.time;
+			sound.volume = inst.volume;
 			if (inst.playing)
 				sound.play(false, inst.time);
         } else {

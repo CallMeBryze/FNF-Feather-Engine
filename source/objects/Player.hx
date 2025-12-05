@@ -10,6 +10,7 @@ class Player extends Character {
         isPlayer = true;
 
         super(x, y, character);
+		cameraPosition.x = -cameraPosition.x;
 
 		this.flipX = !this.flipX;
     }

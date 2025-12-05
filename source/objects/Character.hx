@@ -12,19 +12,24 @@ using StringTools;
 class Character extends FlxSprite {
     private var animOffsets:Map<String, FlxPoint> = new Map();
 
+	public var character:String;
     public var isPlayer:Bool = false;
+
     public var busy:Bool = false;
 
     private var holdDuration:Float = 5;
     public var holdTimer:Float = 0;
 
-    public var character:String;
+    public var cameraPosition:FlxPoint = new FlxPoint();
 
     override public function new(x:Float, y:Float, ?character:String = 'bf')
     {
         this.character = character;
 
         super(x, y);
+
+		var camX:Float = 0;
+		var camY:Float = 0;
 
         switch (character) {
             default:
@@ -52,6 +57,10 @@ class Character extends FlxSprite {
                 playAnim("idle");
 
                 flipX = true;
+
+                camX += 120; // Gets flipped automatically in Player class.
+                camY -= 120;
+
             case 'dad':
 				this.frames = Resources.getSparrowAtlas("characters/daddyDearest", "week1");
 				antialiasing = true;
@@ -64,6 +73,10 @@ class Character extends FlxSprite {
 				addAnim("singRIGHT", "singRIGHT", new FlxPoint(0, 27));
 
                 playAnim("idle");
+
+                camX += 160;
+                camY -= 80;
+
             case 'gf':
                 this.frames = Resources.getSparrowAtlas("characters/GF_assets", "shared");
                 antialiasing = true;
@@ -78,6 +91,8 @@ class Character extends FlxSprite {
 
                 playAnim('danceLeft');
         }
+
+        cameraPosition.set(camX, camY);
     }
 
     override public function update(elapsed:Float) {

@@ -83,10 +83,10 @@ class HealthIcon extends FlxSprite
         } else if (type == ANIMATED) {
 			if (Resources.assetExists('images/icons/simple/icon-$character.xml')) {
 				frames = Resources.getSparrowAtlas('icons/animated/icon-$character');
-				animation.addByPrefix('idle', 'idle0', 24);
-				animation.addByPrefix('transitionToIdle', 'transitionIdle0', 24);
-				animation.addByPrefix('dying', 'dying0', 24);
-				animation.addByPrefix('transitionToDying', 'transitionDying0', 24);
+				animation.addByPrefix('idle', 'idle0', 24, true);
+				animation.addByPrefix('transitionToIdle', 'transitionIdle0', 24, false);
+				animation.addByPrefix('dying', 'dying0', 24, true);
+				animation.addByPrefix('transitionToDying', 'transitionDying0', 24, false);
 
 				setGraphicSize(150);
 				updateHitbox();

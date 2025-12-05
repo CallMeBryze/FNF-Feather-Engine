@@ -1,5 +1,7 @@
 package;
 
+import engine.Controls;
+import engine.UserSettings;
 import flixel.FlxG;
 import flixel.FlxState;
 import states.LoadingState;
@@ -10,8 +12,10 @@ import states.TitleState;
  */
 class InitialState extends FlxState {
     override public function create():Void {
-		FlxG.save.bind('featherEngine', 'CallMeBryze');
 		FlxG.autoPause = false; // disgusting.
+
+        Controls.init();
+        UserSettings.init();
 
 		FlxG.switchState(() -> new LoadingState(true, new TitleState()));
     }

@@ -103,10 +103,10 @@ class ChartingState extends MusicBeatState
         add(bg);
 
         chartCam = new FlxCamera();
-        FlxG.cameras.add(chartCam, true);
+        FlxG.cameras.add(chartCam, false);
 
         topCam = new FlxCamera();
-        FlxG.cameras.add(topCam, false);
+        FlxG.cameras.add(topCam, true);
 
         topCam.bgColor = chartCam.bgColor = FlxColor.TRANSPARENT;
 
@@ -256,7 +256,11 @@ class ChartingState extends MusicBeatState
             var dialog = new FileDialog();
 
             dialog.onSelect.add((str) -> {
+                #if cpp
 				PlayState._songData = Json.parse(File.getFileText(str));
+                #else
+                trace('Implementing never, cope.');
+                #end
                 FlxG.resetState();
             });
 
@@ -823,7 +827,9 @@ class ChartingState extends MusicBeatState
 
         if (note != null) {
 			clearRenderedNotes();
-			buildSectionNotes(curSection, gridBG);
+
+			buildSectionNotes(curSection, opponentGridBG);
+			buildSectionNotes(curSection, playerGridBG);
         }
 
 		noteData.sustainLength = sus;

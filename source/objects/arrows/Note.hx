@@ -3,6 +3,8 @@ package objects.arrows;
 import engine.Conductor;
 import engine.Resources;
 import engine.Song.HitType;
+import engine.UserSettings;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -50,6 +52,8 @@ class Note extends FlxSprite {
     public var wasHit:Bool = false;
     public var canBeHit:Bool = false;
     public var tooLate:Bool = false;
+
+    public var wasMissed:Bool = false;
 
     override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?prevNote:Note = null) {
 		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
@@ -114,15 +118,17 @@ class Note extends FlxSprite {
     override function update(elapsed):Void {
         super.update(elapsed);
 
-		if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset && strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) {
-			canBeHit = true;
-		} else {
-			canBeHit = false;
-        }
+		canBeHit = false;
+		tooLate = false;
 
-		if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset)
+		if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset) {
 			tooLate = true;
+		} else if (Math.abs(strumTime - Conductor.songPosition) <= Conductor.safeZoneOffset) {
+			canBeHit = true;
+		}
     }
+
+    public var stupidOffset:Float = 0;
 
     public function switchSustainAnimation(isEndPiece:Bool, direction:NoteDirection):Void {
         switch (isEndPiece) {
@@ -157,7 +163,9 @@ class Note extends FlxSprite {
         }
 
 		updateHitbox();
-		offset.y -= height;
+
+        if (isEndPiece && !UserSettings.downscroll)
+			stupidOffset += height / 2;
     }
 
 	private function addAnim(name:String, prefix:String):Void

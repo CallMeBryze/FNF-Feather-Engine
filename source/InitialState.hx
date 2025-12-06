@@ -14,9 +14,10 @@ class InitialState extends FlxState {
     override public function create():Void {
 		FlxG.autoPause = false; // disgusting.
 
-        Controls.init();
-        UserSettings.init();
+        // UserSettings now does this automatically
+        // Controls.init();
 
+        UserSettings.init();
 		FlxG.switchState(() -> new LoadingState(true, new TitleState()));
     }
 }

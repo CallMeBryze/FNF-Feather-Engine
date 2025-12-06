@@ -23,6 +23,7 @@ import flixel.util.FlxColor;
 import objects.Character;
 import objects.Player;
 import objects.arrows.Note;
+import objects.arrows.NoteSplash;
 import objects.arrows.Strumline;
 import states.debug.ChartingState;
 import states.template.MusicBeatState;
@@ -34,7 +35,7 @@ class PlayState extends MusicBeatState
     // assets
     public static var arrowAtlas:SparrowTracker;
     public static var strumAtlas:SparrowTracker;
-    public static var sustainGrapihc:FlxGraphic;
+    public static var splashAtlas:SparrowTracker;
 
 	private var gameCam:FlxCamera;
 	private var hudCam:FlxCamera;
@@ -52,6 +53,7 @@ class PlayState extends MusicBeatState
 
 	private var renderedNotes:FlxTypedGroup<Note> = new FlxTypedGroup();
 	private var renderedSustains:FlxTypedGroup<Note> = new FlxTypedGroup();
+    private var renderedSplashes:FlxTypedGroup<NoteSplash> = new FlxTypedGroup();
 
     public static var _songData:Song = {
         song: "test",
@@ -66,6 +68,9 @@ class PlayState extends MusicBeatState
     };
 
 	private var song:SongGroup;
+
+    // SFX
+    // TO IMPLEMENT
 
     // Stage Layers
 	private var stageLayerBack:FlxGroup = new FlxGroup();
@@ -176,12 +181,16 @@ class PlayState extends MusicBeatState
 
         add(playerStrumLine);
         add(opponentStrumLine);
+        
+        var tempSplash:NoteSplash = new NoteSplash();
+        tempSplash.group = renderedSplashes;
 
         renderedNotes.camera = hudCam;
         renderedSustains.camera = hudCam;
 
         add(renderedSustains);
 		add(renderedNotes);
+        add(renderedSplashes);
 
         sectionData = _songData.notes[0];
         generateSong();
@@ -227,9 +236,11 @@ class PlayState extends MusicBeatState
             stageLayerFront.forEachOfType(FlxSprite, transitionObjects);
         }
 
-        if (!songStarted && FlxG.keys.justPressed.SPACE) {
+        if (!songStarted && Controls.confirm) {
 			previousFrameTime = FlxG.game.ticks;
             songStarted = true;
+
+            song.inst.play();
         }
 
 		super.update(elapsed);
@@ -240,10 +251,8 @@ class PlayState extends MusicBeatState
             if (!songStarted) {
                 Conductor.songPosition += elapsed * 1000;
             }
-            else {
+            else { // Song Started
 				Conductor.songPosition = song.inst.time;
-
-				checkSync();
             }
 
             if (inCountdown) {
@@ -269,11 +278,11 @@ class PlayState extends MusicBeatState
 		var final_scrollSpeed:Float = 0.45 * PlayState._songData.scrollSpeed;
         songNotes.forEachAlive((note) -> {
             var strumNote:StrumNote = note.strumParent;
-			var targetY:Float = ((strumNote.y + (strumNote.height / 2)) - (note.height / 2)) + note.stupidOffset;
+			var targetY:Float = (strumNote.y + (strumNote.height / 2)) - (note.height / 2);
 
             note.x = strumNote.x + ((strumNote.width / 2) - (note.width / 2));
 
-			if (!isDownscroll) {
+			if (!isDownscroll) { // UPSCROLL
                 note.y = targetY - ((songPos - note.strumTime) * final_scrollSpeed);
 
                 if (note.y <= hudCam.height) {
@@ -281,10 +290,7 @@ class PlayState extends MusicBeatState
                 }
                 else {
                     note.active = note.visible = false;
-                }
-
-                if (note.isSustain) {
-					note.y += (note.height / 2);
+                    return; // Why bother?
                 }
             } else { // DOWNSCROLL
                 note.y = targetY + ((songPos - note.strumTime) * final_scrollSpeed);
@@ -294,46 +300,45 @@ class PlayState extends MusicBeatState
                 }
                 else {
                     note.active = note.visible = false;
-                }
-
-				if (note.isSustain) {
-					note.y -= (note.height / 2);
-
-					if (note.animation.curAnim.name.endsWith('end') && note.prevNote != null && note.prevNote.alive) {
-						note.y = note.prevNote.y - note.height;
-					}
+                    return; // Why bother?
                 }
             }
 
-            if (note.tooLate) {
+            if (note.noteFocus == PLAYER && note.tooLate) {
 				note.active = false;
 
 				if (!note.wasMissed && (!note.wasHit && note.noteFocus == PLAYER)) {
-					missNote(player, note.direction, true);
 					note.wasMissed = true;
-                }
-
-				if (!isDownscroll) {
-					if (note.y <= hudCam.height)
-						removeNote(note);
-                } else {
-					if (note.y >= -note.height)
-						removeNote(note);
-                }
-
-                return; // No need to run checks any further than this.
-            }
-
-            if (note.active && note.canBeHit && !note.tooLate) {
-                if (note.noteFocus == OPPONENT && Conductor.songPosition >= note.strumTime) {
-                    note.wasHit = true;
-                    singNote(opponent, note, false);
-                    handleSustains(note);
 
                     if (!note.isSustain)
-                        removeNote(note);
+					    missNote(player, note.direction, true, true);
                 }
-			}
+			} else if (note.noteFocus == OPPONENT) {
+				if (!note.wasHit && Conductor.songPosition >= note.strumTime) {
+					note.wasHit = true;
+					singNote(opponent, note, false);
+
+					if (!note.isSustain) {
+						removeNote(note);
+                        return;
+                    }
+                }
+
+                if (note.isSustain)
+				    handleSustains(note);
+            }
+
+            if (note.tooLate && !isDownscroll) {
+                if (note.y <= -note.height) {
+					removeNote(note);
+                    return;
+                }
+			} else if (note.tooLate && isDownscroll) {
+                if (note.y >= hudCam.height) {
+					removeNote(note);
+                    return;
+                }
+            }
         });
 
         if (FlxG.keys.pressed.F9) {
@@ -388,6 +393,8 @@ class PlayState extends MusicBeatState
 				songNotes.add(note);
 
 				var susLength:Int = Math.floor(note.sustainLength / Conductor.stepCrochet);
+                if (susLength > 0 && susLength <= 1)
+                    susLength = 2;
 
 				var prevNote:Note = note;
 				if (isSustain)
@@ -395,17 +402,25 @@ class PlayState extends MusicBeatState
 					for (i in 0...susLength)
 					{
 						var sustainNote:Note = new Note((note.strumTime + (Conductor.stepCrochet * i)) + (Conductor.stepCrochet / 2), note.direction, true, prevNote);
+						sustainNote.strumTime += Conductor.stepCrochet / 2;
+                        sustainNote.noteParent = note;
 						sustainNote.noteFocus = group.type;
 						sustainNote.strumParent = prevNote.strumParent;
                         sustainNote.active = sustainNote.visible = false;
 						songNotes.add(sustainNote);
 
+                        var swagRect:FlxRect = null;
+                        if (!isDownscroll) {
+							swagRect = new FlxRect(0, 0, sustainNote.width / sustainNote.scale.x, sustainNote.height / sustainNote.scale.y);
+                        } else {
+							sustainNote.flipY = true;
+							swagRect = new FlxRect(0, 0, sustainNote.frameWidth, sustainNote.frameHeight);
+                        }
+                        sustainNote.clipRect = swagRect;
+
                         if (i == susLength - 1) {
 							sustainNote.switchSustainAnimation(true, sustainNote.direction);
                         }
-
-						if (isDownscroll)
-                            sustainNote.flipY = true;
 
 						prevNote = sustainNote;
 						renderedSustains.add(sustainNote);
@@ -422,24 +437,18 @@ class PlayState extends MusicBeatState
     }
 
     private function handleSustains(note:Note):Void {
+        if (note.clipRect == null)
+            return;
+
 		var strumNote:StrumNote = note.strumParent;
 		var targetY:Float = ((strumNote.y + (strumNote.height / 2)) - (note.height / 2));
 
 		if (!isDownscroll) {
-			if (note.wasHit || note.noteFocus == OPPONENT) {
-				var swagRect:FlxRect = new FlxRect(0, 0, note.width / note.scale.x, note.height / note.scale.y);
-
-				swagRect.y = ((targetY + (note.height / 2)) - note.y) / note.scale.y;
-				swagRect.height -= swagRect.y;
-
-				note.clipRect = swagRect;
-			}
+			note.clipRect.y = ((targetY + (note.height / 2)) - note.y) / note.scale.y;
+			note.clipRect.height -= note.clipRect.y;
 		} else { // DOWNSCROLL
-			var swagRect:FlxRect = new FlxRect(0, 0, note.frameWidth, note.frameHeight);
-
-			swagRect.height = ((targetY + (note.height / 2) - note.y)) / note.scale.y;
-			swagRect.y = note.frameHeight - swagRect.height;
-			note.clipRect = swagRect;
+			note.clipRect.height = ((targetY + (note.height / 2) - note.y)) / note.scale.y;
+			note.clipRect.y = note.frameHeight - note.clipRect.height;
 		}
     }
 
@@ -479,16 +488,21 @@ class PlayState extends MusicBeatState
 		var duplicateNotes:Array<Note> = [];
 
 		songNotes.forEachAlive(note -> {
-			if (note.noteFocus != PLAYER || !note.canBeHit)
+			if (note.noteFocus != PLAYER || note.noteFocus == PLAYER && !note.canBeHit && !note.tooLate)
 				return;
 
 			var dirIndex = Note.convertFromEnum(note.direction);
 
 			if (note.isSustain) {
-				if (anyHeldPressed && heldPressed[dirIndex] && note.canBeHit) {
-					note.wasHit = true;
-					singNote(character, note, true);
-                    handleSustains(note);
+				if (anyHeldPressed && heldPressed[dirIndex]) {
+					if (note.canBeHit && (note.noteParent != null && note.noteParent.wasHit || note.noteParent == null)) {
+						note.wasHit = true;
+						singNote(character, note, true);
+                    }
+
+                    if (note.wasHit) {
+						handleSustains(note);
+                    }
 				}
 
 				return;
@@ -519,7 +533,7 @@ class PlayState extends MusicBeatState
 		for (i in 0...justPressed.length) {
 			if (justPressed[i] && !bestDirectionNotes.exists(i)) {
 				playerStrumLine.strums.members[i].playAnim("pressed");
-				missNote(character, Note.convertToEnum(i), true);
+				missNote(character, Note.convertToEnum(i), true, true);
 			}
 		}
 
@@ -554,13 +568,35 @@ class PlayState extends MusicBeatState
         if (isPlayer) {
             var vocal:FlxSound = song.vocals.get("player");
             vocal.volume = song.inst.volume;
+
+            if (!note.isSustain) {
+                createSplash(note);
+            }
 		} else {
 			var vocal:FlxSound = song.vocals.get("opponent");
 			vocal.volume = song.inst.volume;
+
+			if (!note.isSustain) {
+				createSplash(note);
+			}
 		}
     }
 
-    private function missNote(character:Character, direction:NoteDirection, ?isPlayer:Bool = true):Void {
+    private function createSplash(note:Note):Void {
+		var splashNote:NoteSplash = cast(recycle(NoteSplash), NoteSplash);
+		if (splashNote == null)
+			splashNote = new NoteSplash();
+
+		splashNote.group = renderedSplashes;
+		splashNote.camera = hudCam;
+		splashNote.playSplash(note.strumParent, note.direction);
+
+        // We don't need to worry about removing it when it's done,
+        // since it's coded to remove and kill its self from the group once it's done.
+		renderedSplashes.add(splashNote);
+    }
+
+    private function missNote(character:Character, direction:NoteDirection, ?isPlayer:Bool = true, ?playSound:Bool = false):Void {
 		var animToSing:String = "singLEFTmiss";
 
 		switch (direction) {
@@ -576,6 +612,12 @@ class PlayState extends MusicBeatState
 
 		character.playAnim(animToSing);
 
+        if (playSound) {
+            var missSound:FlxSound = Resources.getAudio("sfx/missnote" + FlxG.random.int(1, 3));
+            missSound.volume = 0.1; // God this sound is loud
+            missSound.play();
+        }
+
         if (isPlayer) {
 			var vocal:FlxSound = song.vocals.get("player");
             vocal.volume = 0;
@@ -589,32 +631,24 @@ class PlayState extends MusicBeatState
 		note.kill();
 
         if (renderedNotes.members.contains(note))
-            renderedNotes.remove(note);
+            renderedNotes.remove(note, true);
         else if (renderedSustains.members.contains(note))
-            renderedSustains.remove(note);
+            renderedSustains.remove(note, true);
 
-		songNotes.remove(note);
-		note.destroy();
+		songNotes.remove(note, true);
+
+	    note.destroy();
     }
 
-    private function checkSync():Void {
-        if (Conductor.songPosition < 0) {
-            song.inst.pause();
-            return;
-        } else if (Conductor.songPosition > song.inst.length) {
-            song.inst.stop();
-        } else if (!song.inst.playing) {
-            song.inst.play();
-        }
-
-		/*if (song.inst.time - Conductor.songPosition <= -20 || song.inst.time - Conductor.songPosition >= 20) {
+    /*private function checkSync():Void {
+		if (song.inst.time - Conductor.songPosition <= -20 || song.inst.time - Conductor.songPosition >= 20) {
             #if debug
 			FlxG.watch.addQuick('Last Desync: ', '${song.inst.time - Conductor.songPosition}ms');
             #end
 
 			Conductor.songPosition = song.inst.time;
-		}*/
-    }
+		}
+    }*/
 
     private function changeCameraFocus(focus:Int):Void {
 		switch (focus) {

@@ -73,6 +73,9 @@ class StrumNote extends FlxSprite
         this.direction = direction;
 
 		super(x, y);
+        
+        x += properties.strumLineOffset[0];
+        y += properties.strumLineOffset[1];
 
 		antialiasing = properties.antialiasing;
 

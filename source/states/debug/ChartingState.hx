@@ -460,6 +460,12 @@ class ChartingState extends MusicBeatState
         };
         songTabGroup.add(bpmStepper);
 
+        var speedStepper:NumericStepper = new NumericStepper(bpmText.x, bpmStepper.y + 32, 0.1, _songData.scrollSpeed, 1, 9, 1);
+        speedStepper.onValueChanged = (speed:Float) -> {
+            _songData.scrollSpeed = speed;
+        }
+        songTabGroup.add(speedStepper);
+
 		var characters = FlxUIDropDownMenu.makeStrIdLabelArray(Resources.getTxt('data/characters').replace('\r', '').split('\n'));
 
         var opponentDropdown:FlxUIDropDownMenu = new FlxUIDropDownMenu(8, bpmStepper.y + 64, characters, (selection) -> {
@@ -482,6 +488,14 @@ class ChartingState extends MusicBeatState
 		dancerDropdown.selectedLabel = _songData.dancer;
 
 		songTabGroup.add(dancerDropdown);
+
+		var stages = FlxUIDropDownMenu.makeStrIdLabelArray(Resources.getTxt('data/stages').replace('\r', '').split('\n'));
+        var stageDropdown:FlxUIDropDownMenu = new FlxUIDropDownMenu(dancerDropdown.x + dancerDropdown.width, dancerDropdown.y, stages, (selection) -> {
+            _songData.stage = selection;
+        });
+        stageDropdown.selectedLabel = _songData.stage;
+
+        songTabGroup.add(stageDropdown);
 
         var defaultSectionLengthText:FlxText = new FlxText(bpmText.x, uiMenu.height - 48, 0, "Default Section Length: ");
         songTabGroup.add(defaultSectionLengthText);

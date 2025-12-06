@@ -10,6 +10,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import openfl.Assets;
 import states.template.MusicBeatState;
 
 using StringTools;

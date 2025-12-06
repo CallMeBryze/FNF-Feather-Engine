@@ -17,11 +17,13 @@ import states.PlayState;
 typedef NoteStyle = {
     var strumArrowsPath:String;
     var noteArrowsPath:String;
-    var noteHoldsPath:String;
+    var noteSplashesPath:String;
 
     var scale:Float;
+    var splashAnimations:Int;
 
     var antialiasing:Bool;
+    var strumLineOffset:Array<Int>;
     var strumOffsets:Array<NoteAnimationOffsets>;
 }
 
@@ -48,6 +50,9 @@ class Note extends FlxSprite {
 
     public var strumParent:StrumNote;
     public var prevNote:Note;
+
+    public var noteParent:Note;
+    public var isParent:Bool = false;
 
     public var wasHit:Bool = false;
     public var canBeHit:Bool = false;
@@ -124,11 +129,10 @@ class Note extends FlxSprite {
 		if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset) {
 			tooLate = true;
 		} else if (Math.abs(strumTime - Conductor.songPosition) <= Conductor.safeZoneOffset) {
-			canBeHit = true;
+            if (isSustain && (prevNote != null && prevNote.wasHit) || !isSustain)
+			    canBeHit = true;
 		}
     }
-
-    public var stupidOffset:Float = 0;
 
     public function switchSustainAnimation(isEndPiece:Bool, direction:NoteDirection):Void {
         switch (isEndPiece) {
@@ -163,9 +167,6 @@ class Note extends FlxSprite {
         }
 
 		updateHitbox();
-
-        if (isEndPiece && !UserSettings.downscroll)
-			stupidOffset += height / 2;
     }
 
 	private function addAnim(name:String, prefix:String):Void

@@ -39,12 +39,12 @@ class Character extends FlxSprite {
                 addAnim("idle", "BF idle dance0", new FlxPoint(-5, 0));
 
 				addAnim("singLEFT", "BF NOTE LEFT0", new FlxPoint(12, -6));
-				addAnim("singDOWN", "BF NOTE DOWN0", new FlxPoint(-10, -50));
+				addAnim("singDOWN", "BF NOTE DOWN0", new FlxPoint(0, -50));
 				addAnim("singUP", "BF NOTE UP0", new FlxPoint(-29, 27));
 				addAnim("singRIGHT", "BF NOTE RIGHT0", new FlxPoint(-38, -7));
 
 				addAnim("singLEFTmiss", "BF NOTE LEFT MISS0", new FlxPoint(12, 24));
-				addAnim("singDOWNmiss", "BF NOTE DOWN MISS0", new FlxPoint(-11, 19));
+				addAnim("singDOWNmiss", "BF NOTE DOWN MISS0", new FlxPoint(0, -25));
 				addAnim("singUPmiss", "BF NOTE UP MISS0", new FlxPoint(-29, 27));
 				addAnim("singRIGHTmiss", "BF NOTE RIGHT MISS0", new FlxPoint(-30, 21));
 
@@ -111,8 +111,11 @@ class Character extends FlxSprite {
         super.update(elapsed);
     }
 
-	private function addAnim(name:String, prefix:String, offsets:FlxPoint, ?fps:Int = 24, ?loop:Bool = false, ?indicies:Array<Int> = null):Void 
+	private function addAnim(name:String, prefix:String, ?offsets:FlxPoint, ?fps:Int = 24, ?loop:Bool = false, ?indicies:Array<Int> = null):Void 
     {
+        if (offsets == null)
+            offsets = new FlxPoint();
+
         if (indicies == null)
             animation.addByPrefix(name, prefix, fps, loop);
         else

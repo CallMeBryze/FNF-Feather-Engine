@@ -38,10 +38,10 @@ class Character extends FlxSprite {
 
                 addAnim("idle", "BF idle dance0", new FlxPoint(-5, 0));
 
-				addAnim("singLEFT", "BF NOTE LEFT0", new FlxPoint(12, -6));
-				addAnim("singDOWN", "BF NOTE DOWN0", new FlxPoint(0, -50));
-				addAnim("singUP", "BF NOTE UP0", new FlxPoint(-29, 27));
-				addAnim("singRIGHT", "BF NOTE RIGHT0", new FlxPoint(-38, -7));
+				addAnim("singLEFT", "BF NOTE LEFT0", new FlxPoint(12, -6), 24, false, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+				addAnim("singDOWN", "BF NOTE DOWN0", new FlxPoint(0, -50), 24, false, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+				addAnim("singUP", "BF NOTE UP0", new FlxPoint(-29, 27), 24, false, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+				addAnim("singRIGHT", "BF NOTE RIGHT0", new FlxPoint(-38, -7), 24, false, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
 
 				addAnim("singLEFTmiss", "BF NOTE LEFT MISS0", new FlxPoint(12, 24));
 				addAnim("singDOWNmiss", "BF NOTE DOWN MISS0", new FlxPoint(0, -25));
@@ -58,8 +58,8 @@ class Character extends FlxSprite {
 
                 flipX = true;
 
-                camX += 120; // Gets flipped automatically in Player class.
-                camY -= 120;
+                camX += 160; // Gets flipped automatically in Player class.
+                camY -= 140;
 
             case 'dad':
 				this.frames = Resources.getSparrowAtlas("characters/daddyDearest", "week1");

@@ -1,7 +1,7 @@
 package;
 
 import engine.Controls;
-import engine.UserSettings;
+import engine.UserData;
 import flixel.FlxG;
 import flixel.FlxState;
 import states.LoadingState;
@@ -17,7 +17,7 @@ class InitialState extends FlxState {
         // UserSettings now does this automatically
         // Controls.init();
 
-        UserSettings.init();
+        UserData.init();
 		FlxG.switchState(() -> new LoadingState(true, new TitleState()));
     }
 }

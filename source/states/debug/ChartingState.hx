@@ -89,6 +89,10 @@ class ChartingState extends MusicBeatState
     // This Game Engine is going to give me an aneurysm istg.
     private var dumbMouseFix:FlxObject;
 
+    private var curSectionText:FlxText;
+    private var curStepText:FlxText;
+    private var curBeatText:FlxText;
+
     override public function create()
     {
         @:privateAccess
@@ -229,6 +233,18 @@ class ChartingState extends MusicBeatState
 		chartCam.setScrollBounds(0, camera.width, -camera.height, camera.height * 2);
 
 		updateWaveforms();
+
+        curSectionText = new FlxText(8, 8, 0, "Current Section: 0", 12);
+        curSectionText.camera = topCam;
+        uiElements.add(curSectionText);
+
+		curStepText = new FlxText(curSectionText.x, curSectionText.y + curSectionText.height, 0, "Current Step: 0", 12);
+		curStepText.camera = topCam;
+        uiElements.add(curStepText);
+
+		curBeatText = new FlxText(curStepText.x, curStepText.y + curStepText.height, 0, "Current Beat: 0", 12);
+		curBeatText.camera = topCam;
+		uiElements.add(curBeatText);
     }
 
 	private var sustainStepper:NumericStepper;
@@ -426,6 +442,19 @@ class ChartingState extends MusicBeatState
         });
 
         sectionTabGroup.add(swapSection);
+
+        var clearSection:FlxButton = new FlxButton(swapSection.x, swapSection.y + 64, "CLEAR", () -> {
+            _songData.notes[curSection].playerNotes = [];
+			_songData.notes[curSection].opponentNotes = [];
+
+			clearRenderedNotes();
+
+			buildSectionNotes(curSection, opponentGridBG);
+			buildSectionNotes(curSection, playerGridBG);
+        });
+        clearSection.color = FlxColor.RED;
+
+        sectionTabGroup.add(clearSection);
 
         // Song Tab
         var songTabGroup:FlxUI = new FlxUI(null, uiMenu);
@@ -678,6 +707,10 @@ class ChartingState extends MusicBeatState
 
 		song.inst.update(elapsed);
 		song.update(elapsed);
+
+        curSectionText.text = 'Current Section: $curSection';
+        curStepText.text = 'Current Step: $curStep';
+        curBeatText.text = 'Current Beat: $curBeat';
 	}
 
     private function getStrumTime(yPos:Float, ?sectionGrid:FlxSprite = null):Float

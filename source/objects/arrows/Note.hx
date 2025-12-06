@@ -3,7 +3,7 @@ package objects.arrows;
 import engine.Conductor;
 import engine.Resources;
 import engine.Song.HitType;
-import engine.UserSettings;
+import engine.UserData;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;

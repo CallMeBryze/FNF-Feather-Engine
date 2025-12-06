@@ -36,6 +36,9 @@ class TitleState extends MusicBeatState {
 
         super.create();
 
-        GameUtil.loadSongAndPlay('test', 'week1');
+        // GameUtil.loadSongAndPlay('test', 'week1');
+
+        // Week Name, Song List, *Required Library, *Difficulty.
+        GameUtil.loadWeekAndPlay("week1", ['test', 'dadbattle'], 'week1', 'normal');
     }
 }

@@ -2,25 +2,28 @@ package states;
 
 import engine.Conductor;
 import engine.Controls;
+import engine.GameUtil;
 import engine.Resources;
 import engine.Song;
 import engine.SongGroup;
-import engine.UserSettings;
+import engine.UserData;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import objects.Character;
+import objects.HealthIcon;
 import objects.Player;
 import objects.arrows.Note;
 import objects.arrows.NoteSplash;
@@ -32,10 +35,18 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
-    // assets
     public static var arrowAtlas:SparrowTracker;
     public static var strumAtlas:SparrowTracker;
     public static var splashAtlas:SparrowTracker;
+
+    public static var songPlaylist:Array<String>;
+    public static var isStoryMode:Bool = false;
+    public static var weekName:String;
+    public static var gameDifficulty:String;
+
+	public static var totalWeekScore:Int = 0;
+
+    private var defaultCamZoom:Float = 0.9;
 
 	private var gameCam:FlxCamera;
 	private var hudCam:FlxCamera;
@@ -48,12 +59,21 @@ class PlayState extends MusicBeatState
     private var playerStrumLine:Strumline;
 
     private var camFollow:FlxObject;
+    private var camZooming:Bool = true;
 
     private var songNotes:FlxTypedGroup<Note> = new FlxTypedGroup();
 
 	private var renderedNotes:FlxTypedGroup<Note> = new FlxTypedGroup();
 	private var renderedSustains:FlxTypedGroup<Note> = new FlxTypedGroup();
     private var renderedSplashes:FlxTypedGroup<NoteSplash> = new FlxTypedGroup();
+
+    private var health:Float = 1;
+
+    private var healthBar:FlxBar;
+    private var scoreTxt:FlxText;
+
+	private var opponentIcon:HealthIcon;
+    private var playerIcon:HealthIcon;
 
     public static var _songData:Song = {
         song: "test",
@@ -69,20 +89,30 @@ class PlayState extends MusicBeatState
 
 	private var song:SongGroup;
 
-    // SFX
-    // TO IMPLEMENT
+	private var isDownscroll:Bool = false;
+    private var curScore:Int = 0;
 
     // Stage Layers
 	private var stageLayerBack:FlxGroup = new FlxGroup();
     private var stageLayerCharacters:FlxGroup = new FlxGroup();
 	private var stageLayerFront:FlxGroup = new FlxGroup();
 
-    private var isDownscroll:Bool = false;
+    // Sounds
+	var gameOverMusic:FlxSound;
+	var gameOverEnd:FlxSound;
 
 	override public function create()
 	{
+		gameOverMusic = Resources.getAudio("music/gameover/gameOver");
+		gameOverMusic.volume = 0.7;
+        gameOverMusic.looped = true;
+
+		gameOverEnd = Resources.getAudio("music/gameover/gameOverEnd");
+		gameOverEnd.volume = 0.7;
+		gameOverEnd.looped = false;
+
         // Store settings here so it doesn't have to call a function every time.
-		isDownscroll = UserSettings.downscroll;
+		isDownscroll = UserData.downscroll;
 
 		previousFrameTime = FlxG.game.ticks;
 
@@ -99,6 +129,9 @@ class PlayState extends MusicBeatState
 		var inst = Resources.getAudio('songs/${_songData.song}/Inst');
         inst.volume = 0.7;
 		inst.looped = false;
+
+        // End song
+        inst.onComplete = endSong;
 
 		song = new SongGroup(inst);
 
@@ -135,7 +168,7 @@ class PlayState extends MusicBeatState
 
         switch (_songData.stage) {
             default:
-                gameCam.zoom = 0.9;
+                defaultCamZoom = 0.9;
 
 				var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Resources.getImage("stages/stage/stageback", "week1"));
 				bg.antialiasing = true;
@@ -162,6 +195,8 @@ class PlayState extends MusicBeatState
 
 				stageLayerFront.add(stageCurtains);
         }
+
+        gameCam.zoom = defaultCamZoom;
 
         add(stageLayerBack);
         add(stageLayerCharacters);
@@ -192,9 +227,140 @@ class PlayState extends MusicBeatState
 		add(renderedNotes);
         add(renderedSplashes);
 
+        var healthBarBG:FlxSprite = new FlxSprite().makeGraphic(Math.floor(FlxG.width / 2) + 8, 16 + 8, FlxColor.BLACK);
+        healthBarBG.camera = hudCam;
+
+        healthBar = new FlxBar(0, FlxG.height * 0.9, RIGHT_TO_LEFT, Math.floor(FlxG.width / 2), 16, this, 'health', 0, 2);
+		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		healthBar.updateHitbox();
+		healthBar.screenCenter(X);
+        healthBar.percent = 50;
+
+        if (isDownscroll)
+            healthBar.y = FlxG.height * 0.1;
+
+        healthBar.camera = hudCam;
+
+		healthBarBG.setPosition(healthBar.x - 4, healthBar.y - 4);
+
+        add(healthBarBG);
+        add(healthBar);
+
+        scoreTxt = new FlxText(healthBarBG.x, healthBarBG.y + healthBarBG.height + 2, 0, "Score: 0");
+        scoreTxt.setFormat(null, 16, FlxColor.WHITE, LEFT);
+        scoreTxt.camera = hudCam;
+
+        add(scoreTxt);
+
+        playerIcon = new HealthIcon(player.character, true, player.antialiasing, healthBar);
+        playerIcon.camera = hudCam;
+        add(playerIcon);
+
+        opponentIcon = new HealthIcon(opponent.character, false, opponent.antialiasing, healthBar);
+        opponentIcon.camera = hudCam;
+        add(opponentIcon);
+
+        updateIconPosition();
+
         sectionData = _songData.notes[0];
         generateSong();
+
+        startCountdown();
 	}
+
+    private function startCountdown():Void {
+        inCountdown = true;
+
+        var iterations:Int = 0;
+		var beatTime:Float = Conductor.crochet;
+
+		Conductor.songPosition = -(beatTime * 4);
+
+        var quickTween:FlxSprite->Void = (sprite) -> {
+			FlxTween.tween(sprite, {y: sprite.y + (sprite.height / 4), alpha: 0}, beatTime / 1000, {ease: FlxEase.cubeInOut, onComplete: (tween) -> {
+                sprite.kill();
+                sprite.destroy();
+            }});
+        };
+
+        new FlxTimer().start(beatTime / 1000, (timer) -> {
+            switch (_songData.stage) {
+                default:
+                    switch (iterations) {
+                        case 0:
+                            var three:FlxSound = Resources.getAudio("sfx/introTHREE");
+                            three.volume = 0.7;
+                            three.play();
+
+                        case 1:
+                            var ready:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/ready'));
+                            ready.setGraphicSize(600);
+                            ready.updateHitbox();
+                            ready.screenCenter(XY);
+                            ready.camera = hudCam;
+                            ready.antialiasing = true;
+
+                            quickTween(ready);
+
+                            add(ready);
+
+                            var two:FlxSound = Resources.getAudio("sfx/introTWO");
+                            two.volume = 0.7;
+                            two.play();
+
+						case 2:
+							var set:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/set'));
+							set.setGraphicSize(600);
+							set.updateHitbox();
+							set.screenCenter(XY);
+							set.camera = hudCam;
+							set.antialiasing = true;
+
+							quickTween(set);
+
+							add(set);
+
+							var one:FlxSound = Resources.getAudio("sfx/introONE");
+							one.volume = 0.7;
+							one.play();
+
+                        case 3:
+							var go:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/go'));
+							go.setGraphicSize(600);
+							go.updateHitbox();
+							go.screenCenter(XY);
+							go.camera = hudCam;
+							go.antialiasing = true;
+
+							quickTween(go);
+
+							add(go);
+
+							var goSfx:FlxSound = Resources.getAudio("sfx/introGO");
+							goSfx.volume = 0.7;
+							goSfx.play();
+
+                        default: // 4th beat
+                            startSong();
+
+                            timer.destroy();
+                            return;
+                    }
+            }
+
+            ++iterations;
+            timer.reset(beatTime / 1000);
+        });
+    }
+
+    private function startSong():Void {
+		Conductor.songPosition = songPos = 0;
+
+		song.inst.play();
+
+		songStarted = true;
+		inCountdown = false;
+    }
 
     // Game Over Stuff
     private var inGameOver:Bool = false;
@@ -210,60 +376,96 @@ class PlayState extends MusicBeatState
     private var songStarted:Bool = false;
     private var paused:Bool = false;
 
+    private function updateIconPosition():Void {
+		opponentIcon.y = healthBar.y - (opponentIcon.width / 2);
+		playerIcon.y = healthBar.y - (playerIcon.width / 2);
+
+		playerIcon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - 26);
+		opponentIcon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (opponentIcon.width - 26);
+    }
+
 	override public function update(elapsed:Float)
 	{
+		song.update(elapsed);
+
+		if (health > 2)
+			health = 2;
+		else if (health <= 0 && !player.isDead) {
+            song.inst.stop();
+			player.alpha = 1;
+
+            player.gameOver(() -> {
+                gameOverMusic.play();
+            }, () -> {
+                gameOverMusic.stop();
+                gameOverEnd.play();
+
+				gameCam.fade(FlxColor.BLACK, 5, false, () -> {
+					FlxG.switchState(() -> new PlayState());
+				});
+            });
+		}
+
         if (player.isDead) {
             if (!inGameOver) {
-				gameCam.focusOn(player.getGraphicMidpoint());
+				camFollow.setPosition(player.getGraphicMidpoint().x , player.getGraphicMidpoint().y);
 
-				var getAlpha:FlxSprite->Void = (object) ->
-				{
+				var getAlpha:FlxSprite->Void = (object) -> {
                     objectAlphaMap.set(object, object.alpha);
 				};
 
 				stageLayerBack.forEachOfType(FlxSprite, getAlpha);
 				stageLayerFront.forEachOfType(FlxSprite, getAlpha);
+                stageLayerCharacters.forEachOfType(Character, getAlpha);
 
 				inGameOver = true;
+                hudCam.visible = false;
+
+                gameCam.zoom = defaultCamZoom;
             }
 
 			var transitionObjects:FlxSprite->Void = (object) -> {
 				var originalAlpha:Float = objectAlphaMap.get(object);
-				object.alpha = FlxMath.lerp(object.alpha, Math.max(originalAlpha - 0.75, 0), FlxMath.getElapsedLerp(0.01, elapsed));
+				object.alpha = FlxMath.lerp(object.alpha, Math.max(originalAlpha - 0.75, 0), FlxMath.getElapsedLerp(0.0075, elapsed));
 			};
 
 			stageLayerBack.forEachOfType(FlxSprite, transitionObjects);
             stageLayerFront.forEachOfType(FlxSprite, transitionObjects);
+            stageLayerCharacters.forEachOfType(Character, transitionObjects);
+
+			player.alpha = 1;
+
+			super.update(elapsed);
+			return;
         }
 
-        if (!songStarted && Controls.confirm) {
-			previousFrameTime = FlxG.game.ticks;
-            songStarted = true;
+		playerIcon.setGraphicSize(Std.int(FlxMath.lerp(playerIcon.width, 150, FlxMath.getElapsedLerp(0.085, elapsed))));
+		playerIcon.updateHitbox();
 
-            song.inst.play();
-        }
+		opponentIcon.setGraphicSize(Std.int(FlxMath.lerp(opponentIcon.width, 150, FlxMath.getElapsedLerp(0.085, elapsed))));
+		opponentIcon.updateHitbox();
+
+		updateIconPosition();
 
 		super.update(elapsed);
 
-        song.update(elapsed);
+        scoreTxt.text = 'Score: ' + curScore;
 
-        if ((inCountdown || songStarted) && !paused) {
-            if (!songStarted) {
+        if ((inCountdown || songStarted) && !paused && !inGameOver) {
+            if (!songStarted && inCountdown) {
                 Conductor.songPosition += elapsed * 1000;
             }
             else { // Song Started
 				Conductor.songPosition = song.inst.time;
+
+				if (camZooming) {
+					gameCam.zoom = FlxMath.lerp(gameCam.zoom, defaultCamZoom, FlxMath.getElapsedLerp(0.095, elapsed));
+					hudCam.zoom = FlxMath.lerp(hudCam.zoom, 1, FlxMath.getElapsedLerp(0.095, elapsed));
+				}
             }
 
             if (inCountdown) {
                 songPos = Conductor.songPosition;
-
-                // Implement later lol
-                if (Conductor.songPosition >= 0) {
-                    songPos = 0;
-
-                    inCountdown = false;
-                }
             } else { // Interpolation
                 songPos += FlxG.game.ticks - previousFrameTime;
                 previousFrameTime = FlxG.game.ticks;
@@ -304,19 +506,21 @@ class PlayState extends MusicBeatState
                 }
             }
 
-            if (note.noteFocus == PLAYER && note.tooLate) {
-				note.active = false;
+            if (note.noteFocus == PLAYER) {
+                if (note.tooLate) {
+                    note.active = false;
 
-				if (!note.wasMissed && (!note.wasHit && note.noteFocus == PLAYER)) {
-					note.wasMissed = true;
+                    if (!note.wasMissed && (!note.wasHit && note.noteFocus == PLAYER)) {
+                        note.wasMissed = true;
 
-                    if (!note.isSustain)
-					    missNote(player, note.direction, true, true);
+                        if (!note.isSustain)
+                            missNote(player, note.direction, true, true);
+                    }
                 }
 			} else if (note.noteFocus == OPPONENT) {
 				if (!note.wasHit && Conductor.songPosition >= note.strumTime) {
-					note.wasHit = true;
 					singNote(opponent, note, false);
+					note.wasHit = true;
 
 					if (!note.isSustain) {
 						removeNote(note);
@@ -341,13 +545,7 @@ class PlayState extends MusicBeatState
             }
         });
 
-        if (FlxG.keys.pressed.F9) {
-            player.gameOver(()->{
-                hudCam.fade(FlxColor.BLACK, 3, false, ()->{
-					FlxG.switchState(() -> new PlayState());
-                });
-            });
-        } else if (FlxG.keys.justPressed.F7) {
+        if (FlxG.keys.justPressed.F7) {
             FlxG.switchState(() -> new ChartingState());
 
             song.kill();
@@ -496,11 +694,13 @@ class PlayState extends MusicBeatState
 			if (note.isSustain) {
 				if (anyHeldPressed && heldPressed[dirIndex]) {
 					if (note.canBeHit && (note.noteParent != null && note.noteParent.wasHit || note.noteParent == null)) {
-						note.wasHit = true;
 						singNote(character, note, true);
+						note.wasHit = true;
                     }
 
                     if (note.wasHit) {
+                        handleSustains(note);
+                    } else if (note.prevNote != null && note.prevNote.wasHit) {
 						handleSustains(note);
                     }
 				}
@@ -539,8 +739,8 @@ class PlayState extends MusicBeatState
 
 		for (dirIndex => note in bestDirectionNotes) {
 			if (justPressed[dirIndex]) {
-				note.wasHit = true;
 				singNote(character, note, true);
+				note.wasHit = true;
 				removeNote(note);
 			}
 		}
@@ -565,13 +765,64 @@ class PlayState extends MusicBeatState
 		var forceAnimation:Bool = (character.animation.curAnim.name == animToSing && !note.isSustain);
 		character.playAnim(animToSing, forceAnimation);
 
-        if (isPlayer) {
+        if (isPlayer && !note.wasHit) {
             var vocal:FlxSound = song.vocals.get("player");
             vocal.volume = song.inst.volume;
 
-            if (!note.isSustain) {
-                createSplash(note);
+            health += 0.05 ;
+
+            var safeZone:Float = Conductor.safeZoneOffset;
+
+            var noteDiff:Float = Math.abs(note.strumTime - songPos);
+            var score:Int = 300;
+            
+            var rating:String = "sick";
+            var wowzers:Bool = true;
+
+            var ratingSpr:FlxSprite = new FlxSprite();
+
+            if (noteDiff > safeZone * 0.9) {
+                rating = "shit";
+                score = 50;
+
+                wowzers = false;
+            } else if (noteDiff > safeZone * 0.75) {
+                rating = "bad";
+                score = 100;
+
+                wowzers = false;
+            } else if (noteDiff > safeZone * 0.3) {
+                rating = "good";
+                score = 200;
+
+                wowzers = false;
             }
+            
+            score = Math.floor(score * note.scoreMultiplier);
+
+            if (!note.isSustain) {
+				if (wowzers)
+					createSplash(note);
+
+                ratingSpr.loadGraphic(Resources.getImage('ui/scoring/$rating'));
+                ratingSpr.antialiasing = true;
+                ratingSpr.setGraphicSize(256);
+                ratingSpr.camera = hudCam;
+                ratingSpr.screenCenter(XY);
+
+                ratingSpr.acceleration.y = 550;
+                ratingSpr.velocity.y -= FlxG.random.int(140, 175);
+
+                add(ratingSpr);
+
+                FlxTween.tween(ratingSpr, {alpha: 0}, (Conductor.crochet * 4) / 1000, {onComplete: (tween) -> {
+                    ratingSpr.kill();
+                    ratingSpr.destroy();
+                }});
+            }
+
+
+            curScore += score;
 		} else {
 			var vocal:FlxSound = song.vocals.get("opponent");
 			vocal.volume = song.inst.volume;
@@ -619,6 +870,9 @@ class PlayState extends MusicBeatState
         }
 
         if (isPlayer) {
+			health -= 0.0475;
+            curScore -= 50;
+
 			var vocal:FlxSound = song.vocals.get("player");
             vocal.volume = 0;
         } else {
@@ -640,16 +894,6 @@ class PlayState extends MusicBeatState
 	    note.destroy();
     }
 
-    /*private function checkSync():Void {
-		if (song.inst.time - Conductor.songPosition <= -20 || song.inst.time - Conductor.songPosition >= 20) {
-            #if debug
-			FlxG.watch.addQuick('Last Desync: ', '${song.inst.time - Conductor.songPosition}ms');
-            #end
-
-			Conductor.songPosition = song.inst.time;
-		}
-    }*/
-
     private function changeCameraFocus(focus:Int):Void {
 		switch (focus) {
 			case 0:
@@ -662,6 +906,33 @@ class PlayState extends MusicBeatState
 
 				camFollow.setPosition(midpoint.x + player.cameraPosition.x, midpoint.y + player.cameraPosition.y);
 		}
+    }
+
+    private function endSong():Void {
+        song.inst.stop(); // Just in case?
+
+        GameUtil.saveSongScore(_songData.song, curScore, gameDifficulty);
+        totalWeekScore += curScore;
+
+        if (isStoryMode) {
+			songPlaylist.shift();
+
+			var nextSong:String = songPlaylist[0];
+
+            if (songPlaylist.length <= 0) {
+                GameUtil.saveWeekScore(weekName, totalWeekScore, gameDifficulty);
+
+                FlxG.switchState(() -> new TitleState());
+                return;
+            } else {
+                GameUtil.prepareSong(nextSong, gameDifficulty);
+				FlxG.switchState(() -> new PlayState());
+                return;
+            }
+        } else {
+			FlxG.switchState(() -> new TitleState());
+			return;
+        }
     }
 
     private var curSection:Int = 0;
@@ -687,16 +958,29 @@ class PlayState extends MusicBeatState
     override function beatHit():Void {
 		super.beatHit();
 
-        // I am very well aware the base game does it the other way around.
-        // I just like this more.
-        if (curBeat % 2 == 0) {
-			if (!player.busy && (player.animation.finished && !player.animation.curAnim.name.startsWith('sing')))
-				player.dance();
-			if (!opponent.busy && (opponent.animation.finished && !opponent.animation.curAnim.name.startsWith('sing')))
-				opponent.dance();
-        }
+        if (songStarted) {
+            if (curBeat % 4 == 0) {
+                gameCam.zoom += 0.0015;
+                hudCam.zoom += 0.03;
+            }
 
-        if (dancer != null && !dancer.busy && dancer.animation.finished)
-            dancer.dance();
+			playerIcon.setGraphicSize(playerIcon.width * 1.15);
+			playerIcon.updateHitbox();
+
+			opponentIcon.setGraphicSize(opponentIcon.width * 1.15);
+			opponentIcon.updateHitbox();
+
+			updateIconPosition();
+
+            if (curBeat % 2 == 0) {
+                if (dancer != null && !dancer.busy && dancer.animation.finished)
+                    dancer.dance();
+            }
+
+            if (!player.busy && (player.animation.finished && !player.animation.curAnim.name.startsWith('sing')))
+                player.dance();
+            if (!opponent.busy && (opponent.animation.finished && !opponent.animation.curAnim.name.startsWith('sing')))
+                opponent.dance();
+        }
     }
 }

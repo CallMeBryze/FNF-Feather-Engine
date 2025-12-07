@@ -10,7 +10,7 @@ import states.TitleState;
 
 class Main extends Sprite
 {
-    public static final featherEngineVersion:String = "1.0.0";
+    public static final featherEngineVersion:String = "1.0.1";
 
 	public function new()
 	{
@@ -18,7 +18,7 @@ class Main extends Sprite
 
 		Assets.loadLibrary("shared");
 
-		addChild(new FlxGame(0, 0, InitialState, 144, 144));
+		addChild(new FlxGame(0, 0, InitialState));
         FlxSprite.defaultAntialiasing = false;
 	}
 }

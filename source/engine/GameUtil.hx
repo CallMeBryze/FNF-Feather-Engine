@@ -1,6 +1,8 @@
 package engine;
 
 import engine.UserData.ScoreData;
+import flixel.FlxG;
+import flixel.math.FlxMath;
 import haxe.Json;
 import states.LoadingState;
 import states.PlayState;
@@ -66,5 +68,10 @@ class GameUtil {
 		});
 
 		UserData.export();
+    }
+
+    // this game engine is a fuck.
+    public static function getCameraLerp(lerp:Float, elapsed:Float):Float {
+        return lerp * (elapsed / (1 / FlxG.updateFramerate));
     }
 }

@@ -170,7 +170,7 @@ class PlayState extends MusicBeatState
         changeCameraFocus(0);
         add(camFollow);
 
-        camera.follow(camFollow, LOCKON, FlxMath.getElapsedLerp(0.1, FlxG.elapsed));
+        camera.follow(camFollow, LOCKON, GameUtil.getCameraLerp(0.05, FlxG.elapsed));
 
         switch (_songData.stage) {
             default:

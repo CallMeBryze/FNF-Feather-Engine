@@ -100,9 +100,13 @@ class Resources {
             persist = true;
         }
 
-        var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key);
-        graphic.destroyOnNoUse = false;
-        graphic.persist = persist;
+        var graphic:FlxGraphic = FlxG.bitmap.get(key);
+        
+        if (graphic == null || graphic.isDestroyed) {
+			graphic = FlxGraphic.fromAssetKey(key);
+			graphic.destroyOnNoUse = false;
+			graphic.persist = persist;
+        }
 
         return graphic;
     }

@@ -4,6 +4,7 @@ import engine.Controls;
 import engine.UserData;
 import flixel.FlxG;
 import flixel.FlxState;
+import objects.AtlasText.AtlasFont;
 import states.LoadingState;
 import states.TitleState;
 

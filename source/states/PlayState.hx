@@ -22,6 +22,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import objects.AtlasText;
 import objects.Character;
 import objects.HealthIcon;
 import objects.Player;
@@ -29,6 +30,7 @@ import objects.arrows.Note;
 import objects.arrows.NoteSplash;
 import objects.arrows.Strumline;
 import states.debug.ChartingState;
+import states.substates.PauseSubState;
 import states.template.MusicBeatState;
 
 using StringTools;
@@ -361,7 +363,7 @@ class PlayState extends MusicBeatState
     private function startSong():Void {
 		Conductor.songPosition = songPos = 0;
 
-		song.inst.play();
+		song.music.play();
 
 		songStarted = true;
 		inCountdown = false;
@@ -379,7 +381,6 @@ class PlayState extends MusicBeatState
     // Checks
     private var inCountdown:Bool = false;
     private var songStarted:Bool = false;
-    private var paused:Bool = false;
 
     private function updateIconPosition():Void {
 		opponentIcon.y = healthBar.y - (opponentIcon.width / 2);
@@ -396,7 +397,7 @@ class PlayState extends MusicBeatState
 		if (health > 2)
 			health = 2;
 		else if ((health <= 0 || FlxG.keys.justPressed.F9) && !player.isDead) {
-            song.inst.stop();
+            song.music.stop();
 			player.alpha = 1;
 
 			var gameOver:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/gameover/fnf_loss_sfx"));
@@ -459,16 +460,29 @@ class PlayState extends MusicBeatState
 
         scoreTxt.text = 'Score: ' + curScore;
 
-        if ((inCountdown || songStarted) && !paused && !inGameOver) {
+        if ((inCountdown || songStarted) && !inGameOver) {
+            for (strum in opponentStrumLine.strums) {
+                if (strum.animation.finished)
+                    strum.playAnim("static");
+            }
+
             if (!songStarted && inCountdown) {
                 Conductor.songPosition += elapsed * 1000;
             }
             else { // Song Started
-				Conductor.songPosition = song.inst.time;
+				Conductor.songPosition = song.music.time;
 
 				if (camZooming) {
 					gameCam.zoom = FlxMath.lerp(gameCam.zoom, defaultCamZoom, FlxMath.getElapsedLerp(0.095, elapsed));
 					hudCam.zoom = FlxMath.lerp(hudCam.zoom, 1, FlxMath.getElapsedLerp(0.095, elapsed));
+				}
+
+				// Pause Menu
+				if (Controls.back) {
+					song.music.pause();
+					song.update(0); // Update other tracks
+
+					openSubState(new PauseSubState());
 				}
             }
 
@@ -560,12 +574,17 @@ class PlayState extends MusicBeatState
         }
 
 		handleInput(player);
-
-        for (strum in opponentStrumLine.strums) {
-            if (strum.animation.finished)
-                strum.playAnim("static");
-        }
 	}
+
+    override function closeSubState():Void {
+        super.closeSubState();
+
+        if (songStarted && !player.isDead) {
+			song.music.play();
+        }
+
+		previousFrameTime = FlxG.game.ticks;
+    }
 
     private function generateSong() {
 		var noteSections:Array<SectionWithIdentifier> = [];
@@ -775,9 +794,12 @@ class PlayState extends MusicBeatState
 
         if (isPlayer && !note.wasHit) {
             var vocal:FlxSound = song.vocals.get("player");
-            vocal.volume = song.inst.volume;
+            vocal.volume = song.music.volume;
 
-            health += 0.05 ;
+            if (!note.isSustain)
+                health += 0.05;
+            else
+                health += 0.005;
 
             var safeZone:Float = Conductor.safeZoneOffset;
 
@@ -819,7 +841,7 @@ class PlayState extends MusicBeatState
                     FlxTween.tween(sprite, {alpha: 0}, (Conductor.crochet * 4) / 1000, {onComplete: (tween) -> {
                         sprite.kill();
                         sprite.destroy();
-                    }});
+                    }, ease: FlxEase.cubeInOut});
                 };
 
 				if (wowzers)
@@ -870,7 +892,7 @@ class PlayState extends MusicBeatState
             curScore += score;
 		} else {
 			var vocal:FlxSound = song.vocals.get("opponent");
-			vocal.volume = song.inst.volume;
+			vocal.volume = song.music.volume;
 
 			if (!note.isSustain) {
 				createSplash(note);
@@ -956,7 +978,7 @@ class PlayState extends MusicBeatState
     }
 
     private function endSong():Void {
-        song.inst.stop(); // Just in case?
+        song.music.stop(); // Just in case?
 
         GameUtil.saveSongScore(_songData.song, curScore, gameDifficulty);
         totalWeekScore += curScore;

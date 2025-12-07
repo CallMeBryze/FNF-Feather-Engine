@@ -17,7 +17,7 @@ class Character extends FlxSprite {
 
     public var busy:Bool = false;
 
-    private var holdDuration:Float = 5;
+    private var holdDuration:Float = 4;
     public var holdTimer:Float = 0;
 
     public var cameraPosition:FlxPoint = new FlxPoint();
@@ -89,7 +89,7 @@ class Character extends FlxSprite {
                 addAnim("cheer", "GF Cheer", new FlxPoint());
                 addAnim("scared", "GF FEAR", new FlxPoint(-2, -17));
 
-                playAnim('danceLeft');
+                playAnim('danceRight');
         }
 
         cameraPosition.set(camX, camY);

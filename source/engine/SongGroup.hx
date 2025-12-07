@@ -5,7 +5,10 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 
 class SongGroup extends FlxBasic {
-    public var inst:FlxSound;
+    /**
+     * Only contains the instrumental, but all tracks try to match every property possible other than volume.
+     */
+    public var music:FlxSound;
 
     public var vocals:Map<String, FlxSound> = new Map();
     private var tracks:FlxTypedGroup<FlxSound> = new FlxTypedGroup();
@@ -24,28 +27,28 @@ class SongGroup extends FlxBasic {
         return isValid;
     }
 
-    override public function new (inst:FlxSound) {
+    override public function new (music:FlxSound) {
         super();
 
-        this.inst = inst;
+        this.music = music;
     }
 
     override public function update(elapsed):Void {
         super.update(elapsed);
 
-        inst.update(elapsed);
+        music.update(elapsed);
 
         tracks.forEach((track) -> {
             track.update(elapsed);
 
-            if (inst.playing) {
+            if (music.playing) {
                 if (!track.playing)
-                    track.play(false, inst.time);
+                    track.play(false, music.time);
 
-                track.pitch = inst.pitch;
+                track.pitch = music.pitch;
 
-                if (inst.time - track.time <= -20 || inst.time - track.time >= 20)
-					track.time = inst.time;
+                if (music.time - track.time <= -20 || music.time - track.time >= 20)
+					track.time = music.time;
             } else {
                 track.pause();
             }
@@ -53,9 +56,9 @@ class SongGroup extends FlxBasic {
     }
 
     override public function kill():Void {
-        inst.stop();
-        inst.kill();
-        inst.destroy();
+        music.stop();
+        music.kill();
+        music.destroy();
 
         for (track in tracks) {
             track.stop();
@@ -71,10 +74,10 @@ class SongGroup extends FlxBasic {
 			tracks.add(sound);
 			vocals.set(identifier, sound);
 
-			sound.time = inst.time;
-			sound.volume = inst.volume;
-			if (inst.playing)
-				sound.play(false, inst.time);
+			sound.time = music.time;
+			sound.volume = music.volume;
+			if (music.playing)
+				sound.play(false, music.time);
         } else {
             trace('Vocal is null or Vocal with key $identifier already exists!');
         }

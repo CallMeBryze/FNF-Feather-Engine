@@ -9,6 +9,8 @@ You can also override an asset in shared/default by giving it the same file name
 You are able to load assets outside of the currently loaded library, however I do not recommend doing so.
 
 Please keep in mind that in most cases, it's best to put your assets in Default and create them in the state before activity occurs.
+Using as little memory as possible is pretty important, since you'd want as many people to be able to play your mod.
+And there are a lot of people with low-end devices, and for longer now too due to the memory crisis going on (at least as of writing).
 
 ### Default
 Smaller assets that don't influence load times should go here. These assets may be cached, but will be dropped from the cache when not in use.

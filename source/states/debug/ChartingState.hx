@@ -286,13 +286,14 @@ class ChartingState extends MusicBeatState
 
         editorTabGroup.add(loadButton);
 
-        var convertButton:FlxButton = new FlxButton(0, saveButton.y, "Convert", () -> { 
+        // I'm just going to make this a seperate app.
+        /*var convertButton:FlxButton = new FlxButton(0, saveButton.y, "Convert", () -> { 
             // TODO:
             // Allow user to convert a base-game chart, or Psych Engine chart, to Feather Engine.
         });
 		convertButton.x = uiMenu.width - (convertButton.width + saveButton.x);
 
-        editorTabGroup.add(convertButton);
+        editorTabGroup.add(convertButton);*/
 
         var requiredLibraryText:FlxText = new FlxText(8, 32, 0, "Required Library");
         editorTabGroup.add(requiredLibraryText);
@@ -583,41 +584,41 @@ class ChartingState extends MusicBeatState
 
 		dumbMouseFix.setPosition(FlxG.mouse.x + chartCam.scroll.x, FlxG.mouse.y + chartCam.scroll.y);
 
-        Conductor.songPosition = song.inst.time;
+        Conductor.songPosition = song.music.time;
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _songData.notes[curSection].lengthInSteps), opponentGridBG);
 
         if (!FlxG.mouse.overlaps(uiMenu)) {
             if (FlxG.keys.justPressed.A || FlxG.keys.justPressed.D) {
                 if (FlxG.keys.justPressed.A && curSection > 0)
                     changeSection(curSection - 1);
-                else if (FlxG.keys.justPressed.D && sectionStartTime(curSection + 1) < song.inst.length)
+                else if (FlxG.keys.justPressed.D && sectionStartTime(curSection + 1) < song.music.length)
                     changeSection(curSection + 1);
 
-                Conductor.songPosition = song.inst.time = sectionStartTime(curSection);
+                Conductor.songPosition = song.music.time = sectionStartTime(curSection);
             }
 
-            song.inst.pitch = 1;
+            song.music.pitch = 1;
 
             if (FlxG.keys.pressed.W || FlxG.keys.pressed.S) {
                 if (FlxG.keys.pressed.W) {
-                    song.inst.time -= 1000 * elapsed;
-					song.inst.pause();
+                    song.music.time -= 1000 * elapsed;
+					song.music.pause();
                 } else if (FlxG.keys.pressed.S) {
-                    if (!song.inst.playing)
-                        song.inst.time += 1000 * elapsed;
+                    if (!song.music.playing)
+                        song.music.time += 1000 * elapsed;
                     else
-                        song.inst.pitch = 1.25;
+                        song.music.pitch = 1.25;
                 }
             }
 
             if (FlxG.keys.justPressed.SPACE) {
-                if (song.inst.playing)
-                    song.inst.pause();
+                if (song.music.playing)
+                    song.music.pause();
                 else {
-					song.inst.resume();
+					song.music.resume();
 
-                    if (!song.inst.playing) {
-                        song.inst.play(false, Conductor.songPosition);
+                    if (!song.music.playing) {
+                        song.music.play(false, Conductor.songPosition);
                     }
                 }
             }
@@ -642,7 +643,7 @@ class ChartingState extends MusicBeatState
 				trace('Moving to previous section!');
 				changeSection(curSection - 1);
             } else {
-                song.inst.time = sectionStartTime();
+                song.music.time = sectionStartTime();
             }
         }
 
@@ -705,7 +706,7 @@ class ChartingState extends MusicBeatState
             }
         }
 
-		song.inst.update(elapsed);
+		song.music.update(elapsed);
 		song.update(elapsed);
 
         curSectionText.text = 'Current Section: $curSection';
@@ -947,10 +948,10 @@ class ChartingState extends MusicBeatState
 		updateSectionLength(playerGridBG, section);
 
         var startTime:Float = sectionStartTime(section);
-        if (song.inst.time < startTime)
-            song.inst.time = startTime;
+        if (song.music.time < startTime)
+            song.music.time = startTime;
 
-        Conductor.songPosition = song.inst.time;
+        Conductor.songPosition = song.music.time;
 
         updateWaveforms();
         sectionLengthStepper.value = _songData.notes[section].lengthInSteps;
@@ -970,7 +971,7 @@ class ChartingState extends MusicBeatState
 
 		song = new SongGroup(inst);
 
-		song.inst.autoDestroy = false;
+		song.music.autoDestroy = false;
 
 		var playerVocals:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Vocals-Player'));
 		var opponentVocals:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Vocals-Opponent'));
@@ -990,8 +991,8 @@ class ChartingState extends MusicBeatState
             updateWaveforms();
         }
 
-		song.inst.play();
-		song.inst.pause();
+		song.music.play();
+		song.music.pause();
     }
 
     private function updateWaveforms():Void {

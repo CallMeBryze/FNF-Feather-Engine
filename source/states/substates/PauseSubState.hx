@@ -1,6 +1,7 @@
 package states.substates;
 
 import engine.Controls;
+import engine.GameUtil;
 import engine.Resources;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -71,7 +72,7 @@ class PauseSubState extends FlxUISubState {
         add(camFollow);
 
         camera.setScrollBounds(0, FlxG.width, -FlxG.height, FlxG.height * 2);
-        camera.follow(camFollow, LOCKON, FlxMath.getElapsedLerp(0.1, FlxG.elapsed));
+		camera.follow(camFollow, LOCKON, GameUtil.getCameraLerp(0.05, FlxG.elapsed));
         camera.focusOn(new FlxPoint(0, optionTexts[0].y + (optionTexts[0].height / 2)));
     }
 

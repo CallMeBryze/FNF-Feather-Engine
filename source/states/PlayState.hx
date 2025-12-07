@@ -537,6 +537,8 @@ class PlayState extends MusicBeatState
 
                         if (!note.isSustain)
                             missNote(player, note.direction, true, true);
+                        else
+						    health -= 0.0475;
                     }
                 }
 			} else if (note.noteFocus == OPPONENT) {

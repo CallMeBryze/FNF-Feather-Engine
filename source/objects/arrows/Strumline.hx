@@ -18,7 +18,7 @@ import states.PlayState;
 class Strumline extends FlxSpriteContainer {
     public var strums:FlxTypedGroup<StrumNote> = new FlxTypedGroup();
 
-    override public function new(x:Float, y:Float) {
+    override public function new(x:Float, y:Float, ?style:String = 'default') {
         super(x, y);
 
         var lastStrum:StrumNote = null;
@@ -40,7 +40,7 @@ class Strumline extends FlxSpriteContainer {
             if (lastStrum != null)
                 startX = lastStrum.width;
 
-            var strumNote:StrumNote = new StrumNote((startX * 0.7) * i, 0, direction);
+            var strumNote:StrumNote = new StrumNote((startX * 0.7) * i, 0, direction, style);
 			add(strumNote);
 
             lastStrum = strumNote;
@@ -56,16 +56,16 @@ class StrumNote extends FlxSprite
 
     public var direction:NoteDirection = LEFT;
 
-	override public function new(x:Float, y:Float, direction:NoteDirection = LEFT)
+	override public function new(x:Float, y:Float, direction:NoteDirection = LEFT, ?style:String = 'default')
 	{
-		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
+		properties = Json.parse(Resources.getTxt('data/styles/$style', "json"));
 		for (offset in properties.strumOffsets)
 			offsets.set(offset.name, new FlxPoint(offset.x, offset.y));
 
-		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != properties.strumArrowsPath))
+		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != '$style:${properties.strumArrowsPath}'))
 		{
 			PlayState.strumAtlas = {
-				identifier: properties.strumArrowsPath,
+				identifier: '$style:${properties.strumArrowsPath}',
 				sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
 			}
 		}

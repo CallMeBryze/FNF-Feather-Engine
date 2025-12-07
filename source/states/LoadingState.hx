@@ -5,6 +5,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.graphics.FlxGraphic;
 import flixel.system.frontEnds.AssetFrontEnd.FlxAssetType;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
@@ -140,7 +141,14 @@ class LoadingState extends MusicBeatState {
 				var targetAsset:AssetTracker = assetsToCache.pop();
 
                 try {
-					FlxG.assets.getAsset(targetAsset.key, targetAsset.type, true);
+                    switch (targetAsset.type) {
+                        default:
+							FlxG.assets.getAsset(targetAsset.key, targetAsset.type, true);
+                        case IMAGE:
+                            var graphic:FlxGraphic = FlxGraphic.fromAssetKey(targetAsset.key, false, targetAsset.key, true);
+                            graphic.destroyOnNoUse = false;
+                            graphic.persist = true;
+                    }
                 } catch (e:Dynamic) {
                     trace('Error! ($e)');
                 }

@@ -965,15 +965,15 @@ class ChartingState extends MusicBeatState
     }
 
     private function reloadAudio():Void {
-		var inst = Resources.getAudio('songs/${_songData.song}/Inst');
+		var inst:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Inst'));
         inst.volume = 0.7;
 
 		song = new SongGroup(inst);
 
 		song.inst.autoDestroy = false;
 
-		var playerVocals:FlxSound = Resources.getAudio('songs/${_songData.song}/Vocals-Player');
-		var opponentVocals:FlxSound = Resources.getAudio('songs/${_songData.song}/Vocals-Opponent');
+		var playerVocals:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Vocals-Player'));
+		var opponentVocals:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Vocals-Opponent'));
 
 		playerVocals.autoDestroy = false;
 		opponentVocals.autoDestroy = false;

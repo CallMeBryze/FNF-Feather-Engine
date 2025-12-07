@@ -90,7 +90,11 @@ class PlayState extends MusicBeatState
 	private var song:SongGroup;
 
 	private var isDownscroll:Bool = false;
+
     private var curScore:Int = 0;
+    private var curCombo:Int = 0;
+
+    private var gameStyle:String = "default";
 
     // Stage Layers
 	private var stageLayerBack:FlxGroup = new FlxGroup();
@@ -103,11 +107,11 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		gameOverMusic = Resources.getAudio("music/gameover/gameOver");
+		gameOverMusic = new FlxSound().loadEmbedded(Resources.getAudio("music/gameover/gameOver"));
 		gameOverMusic.volume = 0.7;
         gameOverMusic.looped = true;
 
-		gameOverEnd = Resources.getAudio("music/gameover/gameOverEnd");
+		gameOverEnd = new FlxSound().loadEmbedded(Resources.getAudio("music/gameover/gameOverEnd"));
 		gameOverEnd.volume = 0.7;
 		gameOverEnd.looped = false;
 
@@ -126,7 +130,7 @@ class PlayState extends MusicBeatState
 		hudCam.bgColor = FlxColor.TRANSPARENT;
 		FlxG.cameras.add(hudCam, false);
 
-		var inst = Resources.getAudio('songs/${_songData.song}/Inst');
+		var inst:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Inst'));
         inst.volume = 0.7;
 		inst.looped = false;
 
@@ -135,8 +139,8 @@ class PlayState extends MusicBeatState
 
 		song = new SongGroup(inst);
 
-		var playerVocals:FlxSound = Resources.getAudio('songs/${_songData.song}/Vocals-Player');
-		var opponentVocals:FlxSound = Resources.getAudio('songs/${_songData.song}/Vocals-Opponent');
+		var playerVocals:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Vocals-Player'));
+		var opponentVocals:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio('songs/${_songData.song}/Vocals-Opponent'));
 
 		song.add(playerVocals, 'player');
 		song.add(opponentVocals, 'opponent');
@@ -168,6 +172,7 @@ class PlayState extends MusicBeatState
 
         switch (_songData.stage) {
             default:
+                gameStyle = 'default';
                 defaultCamZoom = 0.9;
 
 				var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Resources.getImage("stages/stage/stageback", "week1"));
@@ -202,10 +207,10 @@ class PlayState extends MusicBeatState
         add(stageLayerCharacters);
         add(stageLayerFront);
 
-        opponentStrumLine = new Strumline(64, 0);
+		opponentStrumLine = new Strumline(64, 0, gameStyle);
         opponentStrumLine.camera = hudCam;
 
-        playerStrumLine = new Strumline(0, 0);
+		playerStrumLine = new Strumline(0, 0, gameStyle);
         playerStrumLine.x = (gameCam.width - playerStrumLine.width) - 64;
         playerStrumLine.camera = hudCam;
 
@@ -217,7 +222,7 @@ class PlayState extends MusicBeatState
         add(playerStrumLine);
         add(opponentStrumLine);
         
-        var tempSplash:NoteSplash = new NoteSplash();
+        var tempSplash:NoteSplash = new NoteSplash(gameStyle);
         tempSplash.group = renderedSplashes;
 
         renderedNotes.camera = hudCam;
@@ -288,13 +293,13 @@ class PlayState extends MusicBeatState
                 default:
                     switch (iterations) {
                         case 0:
-                            var three:FlxSound = Resources.getAudio("sfx/introTHREE");
+							var three:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/introTHREE"));
                             three.volume = 0.7;
                             three.play();
 
                         case 1:
                             var ready:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/ready'));
-                            ready.setGraphicSize(600);
+                            ready.setGraphicSize(ready.width * 0.7);
                             ready.updateHitbox();
                             ready.screenCenter(XY);
                             ready.camera = hudCam;
@@ -304,13 +309,13 @@ class PlayState extends MusicBeatState
 
                             add(ready);
 
-                            var two:FlxSound = Resources.getAudio("sfx/introTWO");
+							var two:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/introTWO"));
                             two.volume = 0.7;
                             two.play();
 
 						case 2:
 							var set:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/set'));
-							set.setGraphicSize(600);
+							set.setGraphicSize(set.width * 0.7);
 							set.updateHitbox();
 							set.screenCenter(XY);
 							set.camera = hudCam;
@@ -320,13 +325,13 @@ class PlayState extends MusicBeatState
 
 							add(set);
 
-							var one:FlxSound = Resources.getAudio("sfx/introONE");
+							var one:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/introONE"));
 							one.volume = 0.7;
 							one.play();
 
                         case 3:
 							var go:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/go'));
-							go.setGraphicSize(600);
+							go.setGraphicSize(go.width * 0.7);
 							go.updateHitbox();
 							go.screenCenter(XY);
 							go.camera = hudCam;
@@ -336,7 +341,7 @@ class PlayState extends MusicBeatState
 
 							add(go);
 
-							var goSfx:FlxSound = Resources.getAudio("sfx/introGO");
+							var goSfx:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/introGO"));
 							goSfx.volume = 0.7;
 							goSfx.play();
 
@@ -390,9 +395,13 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
-		else if (health <= 0 && !player.isDead) {
+		else if ((health <= 0 || FlxG.keys.justPressed.F9) && !player.isDead) {
             song.inst.stop();
 			player.alpha = 1;
+
+			var gameOver:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/gameover/fnf_loss_sfx"));
+			gameOver.volume = 0.7;
+			gameOver.play();
 
             player.gameOver(() -> {
                 gameOverMusic.play();
@@ -420,8 +429,6 @@ class PlayState extends MusicBeatState
 
 				inGameOver = true;
                 hudCam.visible = false;
-
-                gameCam.zoom = defaultCamZoom;
             }
 
 			var transitionObjects:FlxSprite->Void = (object) -> {
@@ -434,9 +441,10 @@ class PlayState extends MusicBeatState
             stageLayerCharacters.forEachOfType(Character, transitionObjects);
 
 			player.alpha = 1;
+			gameCam.zoom = FlxMath.lerp(gameCam.zoom, defaultCamZoom, FlxMath.getElapsedLerp(0.095, elapsed));
 
 			super.update(elapsed);
-			return;
+			return; // Don't bother updating anything else
         }
 
 		playerIcon.setGraphicSize(Std.int(FlxMath.lerp(playerIcon.width, 150, FlxMath.getElapsedLerp(0.085, elapsed))));
@@ -583,7 +591,7 @@ class PlayState extends MusicBeatState
 				if (noteData.sustainLength > 0)
 					isSustain = true;
 
-				var note:Note = new Note(noteData.strumTime, Note.convertToEnum(noteData.arrow));
+				var note:Note = new Note(noteData.strumTime, Note.convertToEnum(noteData.arrow), false, null, gameStyle);
                 note.sustainLength = noteData.sustainLength;
                 note.noteFocus = group.type;
                 note.strumParent = strumLine.strums.members[noteData.arrow];
@@ -599,7 +607,9 @@ class PlayState extends MusicBeatState
 				{
 					for (i in 0...susLength)
 					{
-						var sustainNote:Note = new Note((note.strumTime + (Conductor.stepCrochet * i)) + (Conductor.stepCrochet / 2), note.direction, true, prevNote);
+						var sustainNote:Note = new Note((note.strumTime + (Conductor.stepCrochet * i)) + (Conductor.stepCrochet / 2), note.direction, true,
+							prevNote, gameStyle);
+
 						sustainNote.strumTime += Conductor.stepCrochet / 2;
                         sustainNote.noteParent = note;
 						sustainNote.noteFocus = group.type;
@@ -651,9 +661,7 @@ class PlayState extends MusicBeatState
     }
 
     // I couldn't figure this out, so to be 100% transparent, I used ChatGPT.
-    // Look, I don't like using generative AI, I really don't. But I'm tired. This is a lot of work.
     // I did code a version of this on my own (partially, based off of old FNF code), but it was super unoptimized and broken.
-    // It's not like this entire project was coded using AI, it was really only this. I promise.
     // AI art bad btw.
 	private function handleInput(?character:Character = null):Void
 	{
@@ -801,26 +809,63 @@ class PlayState extends MusicBeatState
             score = Math.floor(score * note.scoreMultiplier);
 
             if (!note.isSustain) {
+                ++curCombo;
+
+                var spriteTween:FlxSprite->Void = (sprite) -> {
+					sprite.acceleration.y = 550;
+					sprite.velocity.y -= FlxG.random.int(140, 175);
+					sprite.velocity.x -= FlxG.random.int(0, 10);
+
+                    FlxTween.tween(sprite, {alpha: 0}, (Conductor.crochet * 4) / 1000, {onComplete: (tween) -> {
+                        sprite.kill();
+                        sprite.destroy();
+                    }});
+                };
+
 				if (wowzers)
 					createSplash(note);
 
                 ratingSpr.loadGraphic(Resources.getImage('ui/scoring/$rating'));
                 ratingSpr.antialiasing = true;
-                ratingSpr.setGraphicSize(256);
-                ratingSpr.camera = hudCam;
-                ratingSpr.screenCenter(XY);
 
-                ratingSpr.acceleration.y = 550;
-                ratingSpr.velocity.y -= FlxG.random.int(140, 175);
+                ratingSpr.setGraphicSize(ratingSpr.width * 0.7);
+                ratingSpr.updateHitbox();
+                
+                ratingSpr.x = character.x - (ratingSpr.width / 2) + 4;
+                ratingSpr.y = character.y - (ratingSpr.height / 2) + 4;
 
-                add(ratingSpr);
+                spriteTween(ratingSpr);
+				add(ratingSpr);
 
-                FlxTween.tween(ratingSpr, {alpha: 0}, (Conductor.crochet * 4) / 1000, {onComplete: (tween) -> {
-                    ratingSpr.kill();
-                    ratingSpr.destroy();
-                }});
+                var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Resources.getImage('ui/scoring/combo'));
+				comboSpr.antialiasing = ratingSpr.antialiasing;
+
+                comboSpr.setGraphicSize(comboSpr.width * 0.7);
+                comboSpr.updateHitbox();
+
+                comboSpr.setPosition(ratingSpr.x - (comboSpr.width / 2), ratingSpr.y - comboSpr.height);
+
+                spriteTween(comboSpr);
+                add(comboSpr);
+
+                var comboShit:Array<String> = Std.string(curCombo).split("");
+                while (comboShit.length < 3)
+                    comboShit.insert(0, "0");
+
+                for (i in 0...3) {
+                    var comboNum:FlxSprite = new FlxSprite();
+                    comboNum.loadGraphic(Resources.getImage('ui/scoring/num${comboShit[i]}'));
+                    comboNum.antialiasing = comboSpr.antialiasing;
+
+					comboNum.setGraphicSize(comboNum.width * 0.7);
+					comboNum.updateHitbox();
+
+                    comboNum.setPosition(comboSpr.x + comboSpr.width + ((comboNum.width * (i)) + 4), comboSpr.y);
+
+                    spriteTween(comboNum);
+                    add(comboNum);
+                }
             }
-
 
             curScore += score;
 		} else {
@@ -864,7 +909,7 @@ class PlayState extends MusicBeatState
 		character.playAnim(animToSing);
 
         if (playSound) {
-            var missSound:FlxSound = Resources.getAudio("sfx/missnote" + FlxG.random.int(1, 3));
+            var missSound:FlxSound = new FlxSound().loadEmbedded(Resources.getAudio("sfx/missnote" + FlxG.random.int(1, 3)));
             missSound.volume = 0.1; // God this sound is loud
             missSound.play();
         }
@@ -872,6 +917,8 @@ class PlayState extends MusicBeatState
         if (isPlayer) {
 			health -= 0.0475;
             curScore -= 50;
+
+            curCombo = 0;
 
 			var vocal:FlxSound = song.vocals.get("player");
             vocal.volume = 0;
@@ -921,12 +968,13 @@ class PlayState extends MusicBeatState
 
             if (songPlaylist.length <= 0) {
                 GameUtil.saveWeekScore(weekName, totalWeekScore, gameDifficulty);
-
                 FlxG.switchState(() -> new TitleState());
+
                 return;
             } else {
                 GameUtil.prepareSong(nextSong, gameDifficulty);
 				FlxG.switchState(() -> new PlayState());
+
                 return;
             }
         } else {
@@ -940,9 +988,11 @@ class PlayState extends MusicBeatState
     override function stepHit():Void {
 		super.stepHit();
 
-        if (curStep % sectionData.lengthInSteps == 0) {
-            ++curSection;
-            sectionData = _songData.notes[curSection];
+        if (songStarted) {
+            if (curStep % sectionData.lengthInSteps == 0) {
+                ++curSection;
+                sectionData = _songData.notes[curSection];
+            }
         }
 
         if (sectionData == null)
@@ -960,7 +1010,7 @@ class PlayState extends MusicBeatState
 
         if (songStarted) {
             if (curBeat % 4 == 0) {
-                gameCam.zoom += 0.0015;
+                gameCam.zoom += 0.005;
                 hudCam.zoom += 0.03;
             }
 

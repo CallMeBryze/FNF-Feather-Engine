@@ -60,12 +60,12 @@ class Note extends FlxSprite {
 
     public var wasMissed:Bool = false;
 
-    override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?prevNote:Note = null) {
-		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
+    override public function new(strumTime:Float, direction:NoteDirection = LEFT, ?isSustain:Bool = false, ?prevNote:Note = null, ?style:String = 'default') {
+		properties = Json.parse(Resources.getTxt('data/styles/$style', "json"));
 
-		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != properties.noteArrowsPath)) {
+		if (PlayState.arrowAtlas == null || (PlayState.arrowAtlas != null && PlayState.arrowAtlas.identifier != '$style:${properties.noteArrowsPath}')) {
 			PlayState.arrowAtlas = {
-				identifier: properties.noteArrowsPath,
+				identifier: '$style:${properties.noteArrowsPath}',
 				sparrow: Resources.getSparrowAtlas(properties.noteArrowsPath)
             }
         }

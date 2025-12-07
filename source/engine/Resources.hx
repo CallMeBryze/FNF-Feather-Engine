@@ -4,7 +4,9 @@ import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.sound.FlxSound;
+import flixel.system.FlxAssets.FlxSoundAsset;
 import haxe.io.Path;
+import lime.utils.AssetType;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.utils.AssetCache;
@@ -14,6 +16,17 @@ import openfl.utils.Future;
 import states.LoadingState;
 
 class Resources {
+    private static final assetTypes:Array<AssetType> = [
+        BINARY,
+        FONT,
+        IMAGE,
+        MOVIE_CLIP,
+        MUSIC,
+        SOUND,
+        TEXT,
+        TEMPLATE
+    ];
+
     private static var selectedLibrary:String = null;
 
     /**
@@ -30,7 +43,17 @@ class Resources {
             return null;
 
         if (selectedLibrary != null) {
-			Assets.cache.clear(selectedLibrary);
+			for (type in assetTypes) {
+				for (id in Assets.getLibrary(selectedLibrary).list(Std.string(type))) {
+                    if (type == IMAGE)
+                        FlxG.bitmap.removeByKey('$selectedLibrary:$id');
+
+					Assets.cache.clear('$selectedLibrary:$id');
+                    trace('Removed Asset from Cache: $selectedLibrary:$id');
+				}
+            }
+            
+            Assets.cache.clear(selectedLibrary); // Just to confirm?
 			Assets.unloadLibrary(selectedLibrary);
 
             LoadingState.lastCachedLibrary = null;
@@ -65,7 +88,7 @@ class Resources {
             library = selectedLibrary;
 
 		var key:String = Path.normalize('default:assets/default/images/$path.png');
-		if (library != null && existsInLibrary('images/$path.png', library)) {
+		if (library != 'shared' && existsInLibrary('images/$path.png', library)) {
 			key = Path.normalize('$library:assets/$library/images/$path.png');
 
             // Have to do this because we're sort of manually handling graphics with this.
@@ -89,20 +112,18 @@ class Resources {
 	 * @param path Starts in the `assets/[library]/audio` directory. Automatically adds the `.ogg` extension at the end.
 	 * @param library Library to access.
 	 */
-	public static function getAudio(path:String, ?library:String = null):FlxSound
+	public static function getAudio(path:String, ?library:String = null):FlxSoundAsset
 	{
 		if (library == null)
 			library = selectedLibrary;
 
 		var key:String = Path.normalize('default:assets/default/audio/$path.ogg');
-		if (library != null && existsInLibrary('audio/$path.ogg', library))
+		if (library != 'shared' && existsInLibrary('audio/$path.ogg', library))
 			key = Path.normalize('$library:assets/$library/audio/$path.ogg');
 		else if (existsInLibrary('audio/$path.ogg', 'shared'))
 			key = Path.normalize('shared:assets/shared/audio/$path.ogg');
 
-        var sound:FlxSound = new FlxSound().loadEmbedded(FlxG.assets.getSound(key));
-
-		return sound;
+		return FlxG.assets.getSound(key);
 	}
 
     /**
@@ -117,7 +138,7 @@ class Resources {
 			library = selectedLibrary;
 
         var key:String = Path.normalize('default:assets/default/$path.$ext');
-		if (library != null && existsInLibrary('$path.$ext', library))
+		if (library != 'shared' &&  existsInLibrary('$path.$ext', library))
 			key = Path.normalize('$library:assets/$library/$path.$ext');
 		else if (existsInLibrary('$path.$ext', 'shared'))
 			key = Path.normalize('shared:assets/shared/$path.$ext');

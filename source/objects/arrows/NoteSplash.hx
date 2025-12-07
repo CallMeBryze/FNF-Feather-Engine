@@ -16,13 +16,13 @@ class NoteSplash extends FlxSprite {
 
     public var group:FlxTypedGroup<NoteSplash>;
 
-	override public function new()
+	override public function new(?style:String = 'default')
 	{
-		properties = Json.parse(Resources.getTxt("data/styles/default", "json"));
-		if (PlayState.splashAtlas == null || (PlayState.splashAtlas != null && PlayState.splashAtlas.identifier != properties.noteSplashesPath))
+		properties = Json.parse(Resources.getTxt('data/styles/$style', "json"));
+		if (PlayState.splashAtlas == null || (PlayState.splashAtlas != null && PlayState.splashAtlas.identifier != '$style:${properties.noteSplashesPath}'))
 		{
 			PlayState.splashAtlas = {
-				identifier: properties.noteSplashesPath,
+				identifier: '$style:${properties.noteSplashesPath}',
 				sparrow: Resources.getSparrowAtlas(properties.noteSplashesPath)
 			}
 		}

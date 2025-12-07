@@ -33,7 +33,6 @@ class Player extends Character {
                 }
             }
 
-            // Swap for Confirm Input
             if (deathConfirmEvent != null && Controls.confirm) {
                 playAnim("deathConfirm");
 
@@ -50,9 +49,5 @@ class Player extends Character {
         deathConfirmEvent = onConfirm;
 
         playAnim("dies");
-
-		var gameOver:FlxSound = Resources.getAudio("sfx/gameover/fnf_loss_sfx");
-		gameOver.volume = 0.7;
-		gameOver.play();
     }
 }

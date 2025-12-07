@@ -1,0 +1,193 @@
+package engine;
+
+import flixel.FlxG;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.sound.FlxSound;
+import flixel.system.FlxAssets.FlxSoundAsset;
+import haxe.io.Path;
+import lime.utils.AssetType;
+import openfl.Assets;
+import openfl.display.BitmapData;
+import openfl.utils.AssetCache;
+import openfl.utils.AssetLibrary;
+import openfl.utils.AssetType;
+import openfl.utils.Future;
+import states.LoadingState;
+
+class Resources {
+    private static final assetTypes:Array<AssetType> = [
+        BINARY,
+        FONT,
+        IMAGE,
+        MOVIE_CLIP,
+        MUSIC,
+        SOUND,
+        TEXT,
+        TEMPLATE
+    ];
+
+    private static var selectedLibrary:String = null;
+
+    /**
+     * Change the Library to be loaded, and clear cache.
+     * Warning! This returns a Future! Assets in the library are not immediately loaded.
+     * 
+     * Manually use `Assets.loadLibrary` if you want to use multiple libraries. This changes the global library.
+     * 
+     * @param name Library Name
+     * @return Future<AssetLibrary>
+     */
+    public static function changeLibrary(name:String):Future<AssetLibrary> {
+        if (name == 'shared' || name == 'default')
+            return null;
+
+        if (selectedLibrary != null) {
+			for (type in assetTypes) {
+				for (id in Assets.getLibrary(selectedLibrary).list(Std.string(type))) {
+                    if (type == IMAGE)
+                        FlxG.bitmap.removeByKey('$selectedLibrary:$id');
+
+					Assets.cache.clear('$selectedLibrary:$id');
+                    trace('Removed Asset from Cache: $selectedLibrary:$id');
+				}
+            }
+            
+            Assets.cache.clear(selectedLibrary); // Just to confirm?
+			Assets.unloadLibrary(selectedLibrary);
+
+            LoadingState.lastCachedLibrary = null;
+        }
+
+        selectedLibrary = name;
+        return Assets.loadLibrary(name);
+    }
+
+    /**
+     * Internal Function
+     * @param path Starts in `assets` directory.
+     * @param library 
+     * @return Bool
+     */
+    private static function existsInLibrary(path:String, library:String):Bool {
+		var key:String = Path.normalize('$library:assets/$library/$path');
+
+        return Assets.exists(key);
+    }
+
+    /**
+     * Retrieve the Bitmap Data from a path.
+	 * @param path Starts in the `assets/[library]/images` directory. Automatically adds the `.png` extension at the end.
+     * @param library Library to access.
+     */
+    public static function getImage(path:String, ?library:String = null):FlxGraphic
+    {
+        var persist:Bool = false;
+
+        if (library == null)
+            library = selectedLibrary;
+
+		var key:String = Path.normalize('default:assets/default/images/$path.png');
+		if (library != 'shared' && existsInLibrary('images/$path.png', library)) {
+			key = Path.normalize('$library:assets/$library/images/$path.png');
+
+            // Have to do this because we're sort of manually handling graphics with this.
+            if (library == selectedLibrary)
+                persist = true;
+        }
+        else if (existsInLibrary('images/$path.png', 'shared')) {
+			key = Path.normalize('shared:assets/shared/images/$path.png');
+            persist = true;
+        }
+
+        var graphic:FlxGraphic = FlxG.bitmap.get(key);
+        
+        if (graphic == null || graphic.isDestroyed) {
+			graphic = FlxGraphic.fromAssetKey(key);
+			graphic.destroyOnNoUse = false;
+			graphic.persist = persist;
+        }
+
+        return graphic;
+    }
+
+	/**
+	 * Retrieve Audio from a path.
+	 * @param path Starts in the `assets/[library]/audio` directory. Automatically adds the `.ogg` extension at the end.
+	 * @param library Library to access.
+	 */
+	public static function getAudio(path:String, ?library:String = null):FlxSoundAsset
+	{
+		if (library == null)
+			library = selectedLibrary;
+
+		var key:String = Path.normalize('default:assets/default/audio/$path.ogg');
+		if (library != 'shared' && existsInLibrary('audio/$path.ogg', library))
+			key = Path.normalize('$library:assets/$library/audio/$path.ogg');
+		else if (existsInLibrary('audio/$path.ogg', 'shared'))
+			key = Path.normalize('shared:assets/shared/audio/$path.ogg');
+
+		return FlxG.assets.getSound(key);
+	}
+
+    /**
+     * Retrieve Text File Contents from a path.
+     * @param path Starts in the `assets` directory. Automatically adds the `.txt` extension at the end.
+     * @param txt Define the extension to be used.
+	 * @param library Library to access.
+     */
+    public static function getTxt(path:String, ?ext:String = 'txt', ?library:String = null):String
+    {
+		if (library == null)
+			library = selectedLibrary;
+
+        var key:String = Path.normalize('default:assets/default/$path.$ext');
+		if (library != 'shared' &&  existsInLibrary('$path.$ext', library))
+			key = Path.normalize('$library:assets/$library/$path.$ext');
+		else if (existsInLibrary('$path.$ext', 'shared'))
+			key = Path.normalize('shared:assets/shared/$path.$ext');
+
+        return Assets.getText(key);
+    }
+
+    /**
+     * @param path Starts in the default libraries directory.
+     * @param library String
+     * @param type AssetType
+     * @return Bool
+     */
+    public static function assetExists(path:String, ?library:String = null, ?type:AssetType):Bool
+    {
+		if (library == null)
+			library = selectedLibrary;
+
+        var key:String = Path.normalize('default:assets/default/$path');
+        if (library != null && existsInLibrary(path, library))
+			key = Path.normalize('$library:assets/$library/$path');
+		else if (existsInLibrary(path, 'shared'))
+			key = Path.normalize('shared:assets/shared/$path');
+
+        return Assets.exists(key, type);
+    }
+
+    /**
+     * @param path Starts in the `images` directory. Do not include an extension.
+     * @param persist Refer to `getImage()`.
+     * @param library Refer to `getImage()`.
+     * @return FlxAtlasFrames
+     */
+	public static function getSparrowAtlas(path:String, ?library:String = null):FlxAtlasFrames
+    {
+        return FlxAtlasFrames.fromSparrow(getImage('$path', library), getTxt('images/$path', 'xml', library));
+    }
+}
+
+/*typedef ResourceWithIdentifier = {
+    var identifier:String;
+    var resource:Dynamic;
+}*/
+
+typedef SparrowTracker = {
+    var identifier:String;
+    var sparrow:FlxAtlasFrames;
+}

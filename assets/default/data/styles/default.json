@@ -1,0 +1,12 @@
+{
+    "strumArrowsPath": "ui/notes/noteStrumline",
+    "noteArrowsPath": "ui/notes/notes",
+    "noteSplashesPath": "ui/notes/noteSplashes",
+
+    "scale": 0.7,
+    "splashAnimations": 2,
+
+    "antialiasing": true,
+    "strumLineOffset": [0, 0],
+    "strumOffsets": []
+}

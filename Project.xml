@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 
 	<!-- _________________________ Application Settings _________________________ -->
-
+     
 	<app title="Friday Night Funkin' Feather Engine" file="Feather" main="Main" version="1.0.0" company="CallMeBryze" />
-
+    
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
 	<app preloader="flixel.system.FlxPreloader" />
@@ -16,7 +16,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="240" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -29,22 +29,33 @@
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
-	<set name="BUILD_DIR" value="export" />
+    <set name="BUILD_DIR" value="export/release"/>
+	<set name="BUILD_DIR" value="export/debug" if="debug"/>
 	<source path="source" />
-	<assets path="assets" />
+
+    <library name="default" preload="false" />
+    <assets path="assets/default" library="default"/>
+
+    <library name="shared" preload="true"/>
+	<assets path="assets/shared" library="shared"/>
+
+    <library name="week1" preload="false"/>
+    <assets path="assets/week1" library="week1"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
 
 	<!--In case you want to use the addons package-->
-	<!--<haxelib name="flixel-addons" />-->
+	<haxelib name="flixel-addons" />
 
 	<!--In case you want to use the ui package-->
-	<!--<haxelib name="flixel-ui" />-->
+	<haxelib name="flixel-ui" />
 
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
+
+    <haxelib name="flixel-waveform" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

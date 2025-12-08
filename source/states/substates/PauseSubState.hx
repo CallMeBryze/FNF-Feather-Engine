@@ -36,6 +36,9 @@ class PauseSubState extends FlxUISubState {
 
         super.create();
 
+        FlxG.sound.playMusic(Resources.getAudio("music/breakfast"), 0);
+        FlxG.sound.music.fadeIn(3, 0, 0.2);
+
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0.4;
         bg.scrollFactor.set();
@@ -53,7 +56,7 @@ class PauseSubState extends FlxUISubState {
 
 		var engineText = new FlxText(0, 0, 0, 'Feather Engine v${Main.featherEngineVersion}', 12);
 		if (Application.current.meta.get("company") != 'CallMeBryze')
-		    engineText.text = 'Feather Engine v${Main.featherEngineVersion}\nMod v${Application.current.meta.get("version")}';
+			engineText.text = 'Feather Engine v${Main.featherEngineVersion}\nMod v${Application.current.meta.get("version")}';
 
         engineText.setFormat(null, 12, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
         engineText.borderSize = 2;
@@ -102,10 +105,14 @@ class PauseSubState extends FlxUISubState {
 
         camFollow.setPosition(0, optionTexts[curSelected].y + (optionTexts[curSelected].height / 2));
         for (i in 0...optionTexts.length) {
-            if (i != curSelected)
-                optionTexts[i].alpha = 0.4;
-            else
-                optionTexts[i].alpha = 1;
+            if (i != curSelected) {
+				optionTexts[i].alpha = 0.4;
+				optionTexts[i].x = FlxMath.lerp(optionTexts[i].x, 8, FlxMath.getElapsedLerp(0.1, elapsed));
+            }
+            else {
+				optionTexts[i].alpha = 1;
+				optionTexts[i].x = FlxMath.lerp(optionTexts[i].x, 32, FlxMath.getElapsedLerp(0.1, elapsed));
+            }
         }
 
         if (Controls.confirm) {
@@ -123,5 +130,11 @@ class PauseSubState extends FlxUISubState {
                     FlxG.sound.play(Resources.getAudio('sfx/cancelMenu'), 0.7);
             }
         }
+    }
+
+    override public function close():Void {
+        FlxG.sound.music.stop();
+
+        super.close();
     }
 }

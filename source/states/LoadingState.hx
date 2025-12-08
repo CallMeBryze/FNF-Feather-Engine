@@ -40,8 +40,7 @@ class LoadingState extends MusicBeatState {
 
         for (type in allAssetTypes) {
             for (asset in FlxG.assets.list(type)) {
-                if (asset.startsWith(startingDir))
-                {
+                if (asset.startsWith(startingDir)) {
                     #if debug
                     trace('Adding "$asset" to cache list!');
                     #end

@@ -92,6 +92,7 @@ class PlayState extends MusicBeatState
 	private var song:SongGroup;
 
 	private var isDownscroll:Bool = false;
+    private var isMiddlescroll:Bool = false;
 
     private var curScore:Int = 0;
     private var curCombo:Int = 0;
@@ -119,6 +120,7 @@ class PlayState extends MusicBeatState
 
         // Store settings here so it doesn't have to call a function every time.
 		isDownscroll = UserData.downscroll;
+        isMiddlescroll = UserData.middlescroll;
 
 		previousFrameTime = FlxG.game.ticks;
 
@@ -219,6 +221,11 @@ class PlayState extends MusicBeatState
 		if (isDownscroll) {
 			var offset:Float = 0; // Don't personally need this yet
 			opponentStrumLine.y = playerStrumLine.y = FlxG.height - opponentStrumLine.height + offset;
+        }
+
+        if (isMiddlescroll) {
+            opponentStrumLine.x = -(opponentStrumLine.width * 2);
+            playerStrumLine.screenCenter(X);
         }
 
         add(playerStrumLine);

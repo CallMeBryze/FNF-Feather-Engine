@@ -1,8 +1,11 @@
 package;
 
+import engine.UserData;
+import engine.WindowUtil;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
 import openfl.display.Sprite;
 import openfl.utils.Assets;
 import states.LoadingState;
@@ -17,8 +20,14 @@ class Main extends Sprite
 		super();
 
 		Assets.loadLibrary("shared");
+		UserData.init();
 
-		addChild(new FlxGame(0, 0, InitialState));
+		var aspectRatio:Array<Float> = UserData.saveData.options.aspectRatio;
+        var gameResolution:Array<Int> = WindowUtil.calcGameBounds(aspectRatio[0], aspectRatio[1], 720);
+
+		addChild(new FlxGame(gameResolution[0], gameResolution[1], InitialState));
+
         FlxSprite.defaultAntialiasing = false;
+        FlxG.resizeWindow(gameResolution[0], gameResolution[1]);
 	}
 }

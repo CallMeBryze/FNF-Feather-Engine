@@ -122,6 +122,8 @@ class PauseSubState extends FlxUISubState {
                     close();
 
                 case 'restart':
+                    FlxG.sound.music.stop();
+
 					FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
                     LoadingState.loadAndSwitchState(new PlayState());
 

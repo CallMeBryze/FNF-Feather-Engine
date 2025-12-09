@@ -135,6 +135,10 @@ class LoadingState extends MusicBeatState {
 
         super.create();
 
+        // Dumb workaround lolol
+		var oldUpdateRate:Int = FlxG.updateFramerate;
+		FlxG.updateFramerate = 1000;
+
         new FlxTimer().start(1, (timer) -> {
             if (assetsToCache.length > 0) {
 				var targetAsset:AssetTracker = assetsToCache.pop();
@@ -144,9 +148,11 @@ class LoadingState extends MusicBeatState {
                         default:
 							FlxG.assets.getAsset(targetAsset.key, targetAsset.type, true);
                         case IMAGE:
-                            var graphic:FlxGraphic = FlxGraphic.fromAssetKey(targetAsset.key, false, targetAsset.key, true);
+                            var graphic:FlxGraphic = FlxGraphic.fromAssetKey(targetAsset.key, false, targetAsset.key, false);
                             graphic.destroyOnNoUse = false;
                             graphic.persist = true;
+
+                            FlxG.bitmap.addGraphic(graphic);
                     }
                 } catch (e:Dynamic) {
                     trace('Error! ($e)');
@@ -158,8 +164,10 @@ class LoadingState extends MusicBeatState {
 				trace('Cached Asset: ${targetAsset.key}');
 				#end
 
-				timer.reset(1.0 / FlxG.updateFramerate);
+				timer.reset(0);
             } else {
+				FlxG.updateFramerate = oldUpdateRate;
+
                 timer.destroy();
 				FlxG.switchState(() -> targetState);
             }

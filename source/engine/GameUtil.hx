@@ -45,7 +45,7 @@ class GameUtil {
     }
 
     public static function saveSongScore(name:String, score:Int, ?difficulty:String = 'normal'):Void {
-		var songScores = UserData.saveData.highscores.songs;
+		var songScores = UserData.highscores.songs;
         removeOverlapScore(songScores, name, difficulty);
 
         songScores.push({
@@ -54,11 +54,11 @@ class GameUtil {
             score: score
         });
 
-        UserData.export();
+        UserData.saveScores();
     }
 
     public static function saveWeekScore(name:String, score:Int, ?difficulty:String = 'normal'):Void {
-		var weekScores = UserData.saveData.highscores.weeks;
+		var weekScores = UserData.highscores.weeks;
 		removeOverlapScore(weekScores, name, difficulty);
 
 		weekScores.push({
@@ -67,7 +67,7 @@ class GameUtil {
 			score: score
 		});
 
-		UserData.export();
+        UserData.saveScores();
     }
 
     // this game engine is a fuck.

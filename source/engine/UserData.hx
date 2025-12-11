@@ -8,77 +8,72 @@ import openfl.filesystem.File;
 import sys.FileSystem;
 #end
 
-// TODO: REWRITE THIS LATER!!! THIS IS STUPID AS HELL!!!
-
-/**
- * I am very well aware that FlxG.save.data exists.
- * But for portability reasons, and easy user modification, we're doing this.
- */
 class UserData {
-    public static var saveData:SaveData;
-
     public static var downscroll(get, never):Null<Bool>;
     public static var middlescroll(get, never):Null<Bool>;
+
+    public static var highscores:HighscoreData = {
+        songs: [],
+        weeks: []
+    };
 
     public static function init():Void {
         Controls.init();
 
-        // Default Values
-        saveData = {
-            options: {
-				fps: 144,
-				downscroll: false,
-                middlescroll: false,
-                fullscreen: false,
-                aspectRatio: [16, 9],
-				keybinds: []
-            },
-            highscores: {
-                songs: [],
-                weeks: []
-            }
-        }
+        if (FlxG.save.data.controls != null) {
+            var keybinds:Array<UserKeybind> = FlxG.save.data.controls;
 
-        for (key in Controls.controlMapping.keyValueIterator()) {
-            saveData.options.keybinds.push({
-                control: key.key,
-                keys: key.value
-            });
-        }
-
-        #if cpp
-        if (FileSystem.exists("saveData.json")) {
-		    saveData = Json.parse(File.getFileText("saveData.json"));
-
-			for (keybind in saveData.options.keybinds) {
-                Controls.controlMapping.set(keybind.control, keybind.keys);
-            }
+            for (control in keybinds)
+                Controls.controlMapping.set(control.control, control.keys);
         } else {
-			export();
+            var keybinds:Array<UserKeybind> = [];
+
+            for (control in Controls.controlMapping.keyValueIterator())
+                keybinds.push({control: control.key, keys: control.value});
+
+            FlxG.save.data.controls = keybinds;
         }
-        #end
+
+        if (FlxG.save.data.fps != null && Std.isOfType(FlxG.save.data.fps, Int)) {
+            FlxG.updateFramerate = FlxG.drawFramerate = FlxG.save.data.fps;
+        } else {
+            FlxG.save.data.fps = 144;
+        }
+
+        if (FlxG.save.data.highscores != null) {
+            var savedScores:HighscoreData = FlxG.save.data.highscores;
+
+            if (savedScores != null && (savedScores.songs != null && savedScores.weeks != null))
+                highscores = savedScores;
+        }
     }
 
-    public static function export():Void {
-		File.saveText("saveData.json", Json.stringify(saveData, null, '\t'));
+    public static function saveScores():Void {
+        FlxG.save.data.highscores = highscores;
     }
 
 	static function get_downscroll():Bool
-		return saveData.options.downscroll;
+		return FlxG.save.data.downscroll;
 
-    static function get_middlescroll():Null<Bool> {
-        return saveData.options.middlescroll;
+    static function set_downscroll(value:Bool):Bool {
+        FlxG.save.data.downscroll = value;
+
+        return FlxG.save.data.downscroll;
+    }
+
+    static function get_middlescroll():Bool
+        return FlxG.save.data.middlescroll;
+
+    static function set_middlescroll(value:Bool):Bool {
+        FlxG.save.data.middlescroll = value;
+
+        return FlxG.save.data.middlescroll;
     }
 }
 
 typedef UserKeybind = {
 	var control:String;
     var keys:Array<FlxKey>;
-}
-
-typedef SaveData = {
-    var options:OptionData;
-    var highscores:HighscoreData;
 }
 
 typedef HighscoreData = {
@@ -90,13 +85,4 @@ typedef ScoreData = {
     var name:String;
     var difficulty:String;
     var score:Int;
-}
-
-typedef OptionData = {
-    var fps:Int;
-    var downscroll:Bool;
-    var middlescroll:Bool;
-    var fullscreen:Bool;
-    var aspectRatio:Array<Float>;
-    var keybinds:Array<UserKeybind>;
 }

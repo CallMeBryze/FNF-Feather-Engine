@@ -224,7 +224,8 @@ class PlayState extends MusicBeatState
         }
 
         if (isMiddlescroll) {
-            opponentStrumLine.x = -(opponentStrumLine.width * 2);
+            // opponentStrumLine.x = -(opponentStrumLine.width * 2);
+            opponentStrumLine.visible = false;
             playerStrumLine.screenCenter(X);
         }
 
@@ -549,6 +550,9 @@ class PlayState extends MusicBeatState
                     }
                 }
 			} else if (note.noteFocus == OPPONENT) {
+                if (isMiddlescroll)
+                    note.visible = false;
+
 				if (!note.wasHit && Conductor.songPosition >= note.strumTime) {
 					singNote(opponent, note, false);
 					note.wasHit = true;
@@ -719,6 +723,8 @@ class PlayState extends MusicBeatState
 			return;
 
 		var bestDirectionNotes = new Map<Int, Note>();
+        var hitSustainNotes = new Map<Int, Note>();
+
 		var duplicateNotes:Array<Note> = [];
 
 		songNotes.forEachAlive(note -> {
@@ -730,13 +736,22 @@ class PlayState extends MusicBeatState
 			if (note.isSustain) {
 				if (anyHeldPressed && heldPressed[dirIndex]) {
 					if (note.canBeHit && (note.noteParent != null && note.noteParent.wasHit || note.noteParent == null)) {
+                        if (!hitSustainNotes.exists(dirIndex))
+                            hitSustainNotes.set(dirIndex, note);
+                        
 						singNote(character, note, true);
 						note.wasHit = true;
                     }
 
                     if (note.wasHit) {
+                        if (!hitSustainNotes.exists(dirIndex))
+                            hitSustainNotes.set(dirIndex, note);
+
                         handleSustains(note);
                     } else if (note.prevNote != null && note.prevNote.wasHit) {
+                        if (!hitSustainNotes.exists(dirIndex))
+                            hitSustainNotes.set(dirIndex, note);
+
 						handleSustains(note);
                     }
 				}
@@ -767,7 +782,7 @@ class PlayState extends MusicBeatState
 			removeNote(note);
 
 		for (i in 0...justPressed.length) {
-			if (justPressed[i] && !bestDirectionNotes.exists(i)) {
+			if (justPressed[i] && !bestDirectionNotes.exists(i) && !hitSustainNotes.exists(i)) {
 				playerStrumLine.strums.members[i].playAnim("pressed");
 				missNote(character, Note.convertToEnum(i), true, true);
 			}
@@ -903,7 +918,7 @@ class PlayState extends MusicBeatState
 			var vocal:FlxSound = song.vocals.get("opponent");
 			vocal.volume = song.music.volume;
 
-			if (!note.isSustain) {
+			if (!note.isSustain && !isMiddlescroll) {
 				createSplash(note);
 			}
 		}

@@ -22,6 +22,7 @@ class PauseSubState extends FlxUISubState {
     private final options:Array<String> = [
         "Resume",
         "Restart",
+        "Options",
         "Quit"
     ];
 
@@ -116,20 +117,24 @@ class PauseSubState extends FlxUISubState {
         }
 
         if (Controls.confirm) {
+            FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
+
             switch (options[curSelected].toLowerCase()) {
                 case 'resume':
-					FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
                     close();
 
                 case 'restart':
                     FlxG.sound.music.stop();
 
-					FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
                     LoadingState.loadAndSwitchState(new PlayState());
 
-                default: // quit
-                    trace('Not yet implemented!'); // User has to make their own menu.
-                    FlxG.sound.play(Resources.getAudio('sfx/cancelMenu'), 0.7);
+                case 'options':
+                    openSubState(new OptionsSubState());
+
+                // Add quit here!
+
+                default:
+                    trace('Not yet implemented!');
             }
         }
     }

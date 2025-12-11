@@ -16,8 +16,11 @@ class InitialState extends FlxState {
     override public function create():Void {
 		FlxG.autoPause = false; // disgusting.
 
-		FlxG.fullscreen = UserData.saveData.options.fullscreen;
-		FlxG.updateFramerate = FlxG.drawFramerate = UserData.saveData.options.fps;
+		/*FlxG.fullscreen = UserOptions.saveData.options.fullscreen;
+		FlxG.updateFramerate = FlxG.drawFramerate = UserData.saveData.options.fps;*/
+
+		// Initializes Controls within its self
+		UserData.init();
 
 		FlxG.switchState(() -> new LoadingState(true, new TitleState()));
     }

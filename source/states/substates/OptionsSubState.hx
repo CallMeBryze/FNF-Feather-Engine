@@ -1,5 +1,9 @@
 package states.substates;
 
+import engine.UserData;
+import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+import flixel.math.FlxRect;
 import engine.Resources;
 import engine.Controls;
 import engine.GameUtil;
@@ -19,13 +23,17 @@ class OptionsSubState extends FlxUISubState {
     private final options:Array<OptionInfo> = [
         {
             preview_text: "Downscroll",
-            description_text: "Moves the Strumline to the bottom of the screen.",
+            description_text: "Moves the Strumlines to the bottom of the screen.",
             variable_name: "downscroll"
         },
         {
             preview_text: "Middlescroll",
-            description_text: "Centers the Player Strumline.",
+            description_text: "Centers your Strumline.",
             variable_name: "middlescroll"
+        },
+        {
+            preview_text: "Framerate",
+            description_text: "" // figure it tf out
         },
         {
             preview_text: "Controls",
@@ -40,7 +48,14 @@ class OptionsSubState extends FlxUISubState {
     private var camFollow:FlxObject = new FlxObject();
 
     private var curSelected:Int = 0;
+
+    private var lastOption:OptionText;
     private var curOption:OptionText;
+
+    private var descText:FlxText;
+    private var settingText:FlxText;
+
+    private var cycleTimer:FlxTimer = new FlxTimer();
 
     override public function create():Void {
         var stupidAssCamera:FlxCamera = new FlxCamera();
@@ -49,87 +64,189 @@ class OptionsSubState extends FlxUISubState {
         FlxG.cameras.add(stupidAssCamera, true);
         camera = stupidAssCamera;
 
-        var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+        var bg:FlxSprite = new FlxSprite().makeGraphic(Math.floor(FlxG.width / 2), FlxG.height, FlxColor.BLACK);
         bg.alpha = 0.4;
         bg.scrollFactor.set();
         add(bg);
 
         super.create();
 
+        var underlay:FlxSprite = new FlxSprite(FlxG.width / 2).makeGraphic(Math.floor(FlxG.width / 2), FlxG.height, FlxColor.WHITE);
+        underlay.alpha = 0.4;
+        underlay.scrollFactor.set();
+        add(underlay);
+        
         for (i in 0...options.length) {
             var option = options[i];
 
             var optionText:OptionText = OptionText.make(option.preview_text);
-            optionText.screenCenter(X);
-            optionText.y = 64 * i;
+
+            optionText.x = Math.max(FlxG.width / 2, FlxG.width - (optionText.width + 8));
+            if (optionTexts.members[i - 1] != null)
+                optionText.y = (optionTexts.members[i - 1].y + optionText.height) + 16;
 
             optionText.ID = i;
             optionText.data = option;
-            optionText.isSelected = (i == curSelected);
 
             optionTexts.add(optionText);
 
-            if (i == 0)
+            optionText.isSelected = (i == curSelected);
+            if (i == curSelected)
                 curOption = optionText;
         }
 
-        add(optionTexts);
+        // Description Text
+        descText = new FlxText(FlxG.width / 2, 0, FlxG.width / 2);
+        descText.setFormat(null, 16, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+        descText.borderSize = 2;
 
-        camFollow.setPosition(curOption.x + (curOption.width / 2), curOption.y + (curOption.height / 2));
+        descText.scrollFactor.y = 0;
+
+        // Not to be confused with option text.
+        settingText = new FlxText(0, 0, FlxG.width / 2, "");
+        settingText.setFormat(null, 72, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+        settingText.borderSize = 7;
+
+        settingText.screenCenter(Y);
+        settingText.scrollFactor.y = 0;
+
+        // Option Selections
+        add(optionTexts);
+        add(descText);
+
+        // Option Information for lack of a better term?
+        add(settingText);
+
+        camFollow.setPosition(FlxG.width / 2, curOption.y + (curOption.height / 2));
         add(camFollow);
 
         camera.follow(camFollow, LOCKON, GameUtil.getCameraLerp(0.05, FlxG.elapsed));
     }
 
+    private var safeToCycle:Bool = true;
     override public function update(elapsed):Void {
-        super.update(elapsed);
+        if ((Controls.downJustPressed || Controls.upJustPressed) || lastOption != curOption) {
+            if (Controls.downJustPressed) {
+                if (curSelected < optionTexts.members.length - 1)
+                    ++curSelected;
+                else
+                    curSelected = 0;
+    
+                FlxG.sound.play(Resources.getAudio('sfx/scrollMenu'), 0.7);
+            } else if (Controls.upJustPressed) {
+                if (curSelected > 0)
+                    --curSelected;
+                else
+                    curSelected = optionTexts.members.length - 1;
+    
+                FlxG.sound.play(Resources.getAudio('sfx/scrollMenu'), 0.7);
+            }
+            
+            for (option in optionTexts.members) {
+                if (option.ID == curSelected) {
+                    settingText.visible = false;
+    
+                    option.isSelected = true;
+                    camFollow.setPosition(FlxG.width / 2, option.y + (option.height / 2));
+    
+                    curOption = option;
+                    
+                    descText.text = curOption.data.description_text;
+                    switch (option.data.preview_text) {
+                        default:
+                            if (option.data.variable_name != null) {
+                                settingText.visible = true;
+                                settingText.text = '${cast(Reflect.getProperty(FlxG.save.data, option.data.variable_name), Bool)}'.toUpperCase();
+                            }
+    
+                        case 'Framerate':
+                            settingText.visible = true;
 
-        if (Controls.downJustPressed) {
-			if (curSelected < optionTexts.members.length - 1)
-				++curSelected;
-			else
-				curSelected = 0;
+                        case 'Controls':
+                            settingText.visible = true;
 
-			FlxG.sound.play(Resources.getAudio('sfx/scrollMenu'), 0.7);
-        }
-        else if (Controls.upJustPressed) {
-			if (curSelected > 0)
-				--curSelected;
-			else
-				curSelected = optionTexts.members.length - 1;
-
-			FlxG.sound.play(Resources.getAudio('sfx/scrollMenu'), 0.7);
-        }
-
-        for (option in optionTexts.members) {
-            if (option.ID == curSelected) {
-                option.isSelected = true;
-                camFollow.setPosition(option.x + (option.width / 2), option.y + (option.height / 2));
-
-                curOption = option;
-            } else {
-                option.isSelected = false;
+                        case 'Back':
+                            // Absolutely nothing!
+                    }
+                } else {
+                    option.isSelected = false;
+                }
             }
         }
 
-        if (Controls.confirm) {
-            if (curOption.text != 'Back')
-                FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
+        super.update(elapsed);
 
-            switch (curOption.text) {
+        if (Controls.confirm) {
+            switch (curOption.data.preview_text) {
                 default:
-                    try {
-                        // Replace with popup menu for selections later
-                        Reflect.setProperty(FlxG.save.data, curOption.data.variable_name, !cast(Reflect.getProperty(FlxG.save.data, curOption.data.variable_name), Bool));
-                    } catch (e:Dynamic) {
-                        throw e; // yeet
+                    if (curOption.data.variable_name != null) {
+                        var property = Reflect.getProperty(FlxG.save.data, curOption.data.variable_name);
+
+                        if (property != null && Std.isOfType(property, Bool)) {
+                            FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
+    
+                            try {
+                                // Replace with popup menu for selections later
+                                Reflect.setProperty(FlxG.save.data, curOption.data.variable_name, !cast(property, Bool));
+                            } catch (e:Dynamic) {
+                                trace(e);
+
+                                throw e; // yeet
+                            }
+
+                            settingText.text = '${!cast(property, Bool)}'.toUpperCase();
+                        } else {
+                            FlxG.sound.play(Resources.getAudio('sfx/cancelMenu'), 0.7);
+                            trace('ERROR! ${curOption.data}');
+                        }
                     }
+                    
+                case 'Framerate':
+                    // Absolutely nothing
+
                 case 'Controls':
-                    // IMPLEMENT LATER
+                    FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
+
+                    // Open Keybind Substate
+                    
                 case 'Back':
                     close();
             }
         }
+
+        switch (curOption.data.preview_text) {
+            case 'Framerate':
+                if (safeToCycle) {
+                    if (Controls.leftPressed || Controls.rightPressed) {
+                        var newFPS:Int = cast(FlxG.save.data.fps, Int);
+
+                        if (Controls.leftPressed) {
+                            --newFPS;
+                        } else {
+                            ++newFPS;
+                        }
+
+                        safeToCycle = false;
+                        cycleTimer.start(0.1, (timer) -> {
+                            safeToCycle = true;
+                        });
+                        
+                        FlxG.save.data.fps = Math.min(500, Math.max(30, newFPS));
+                    }
+                }
+
+                settingText.text = '${FlxG.save.data.fps} FPS';
+
+            case 'Controls':
+                if (lastOption != curOption) {
+                    var map = Controls.controlMapping;
+    
+                    // I'm so fucking sorry lmfao
+                    settingText.text = '[${map.get('left')[0].toString().toUpperCase()},${map.get('down')[0].toString().toUpperCase()},${map.get('up')[0].toString().toUpperCase()},${map.get('right')[0].toString().toUpperCase()}]';
+                }
+        }
+            
+        lastOption = curOption;
 
         if (Controls.back)
             close();

@@ -12,7 +12,7 @@ import states.TitleState;
 
 class Main extends Sprite
 {
-    public static final featherEngineVersion:String = "1.0.1";
+    public static final featherEngineVersion:String = "1.1.0";
 
 	public function new()
 	{

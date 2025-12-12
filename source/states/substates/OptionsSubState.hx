@@ -182,7 +182,7 @@ class OptionsSubState extends FlxUISubState {
                     if (curOption.data.variable_name != null) {
                         var property = Reflect.getProperty(FlxG.save.data, curOption.data.variable_name);
 
-                        if (property != null && Std.isOfType(property, Bool)) {
+                        if (property != null) {
                             FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
     
                             try {
@@ -231,7 +231,7 @@ class OptionsSubState extends FlxUISubState {
                             safeToCycle = true;
                         });
                         
-                        FlxG.save.data.fps = Math.min(500, Math.max(30, newFPS));
+                        FlxG.updateFramerate = FlxG.drawFramerate = FlxG.save.data.fps = Math.min(500, Math.max(30, newFPS));
                     }
                 }
 

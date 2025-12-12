@@ -20,6 +20,14 @@ class UserData {
     public static function init():Void {
         Controls.init();
 
+        // Set Defaults
+        if (FlxG.save.data.downscroll == null)
+            FlxG.save.data.downscroll = false;
+
+        if (FlxG.save.data.middlescroll == null)
+            FlxG.save.data.middlescroll = false;
+
+        // Set Keybinds
         if (FlxG.save.data.controls != null) {
             var keybinds:Array<UserKeybind> = FlxG.save.data.controls;
 
@@ -34,12 +42,14 @@ class UserData {
             FlxG.save.data.controls = keybinds;
         }
 
+        // Set Framerate
         if (FlxG.save.data.fps != null && Std.isOfType(FlxG.save.data.fps, Int)) {
             FlxG.updateFramerate = FlxG.drawFramerate = FlxG.save.data.fps;
         } else {
             FlxG.save.data.fps = 144;
         }
 
+        // Set Highscores
         if (FlxG.save.data.highscores != null) {
             var savedScores:HighscoreData = FlxG.save.data.highscores;
 

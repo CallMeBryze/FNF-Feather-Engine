@@ -1,5 +1,7 @@
 package states.substates;
 
+import Main.Dirty;
+import flixel.math.FlxMath;
 import engine.UserData;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
@@ -33,7 +35,7 @@ class OptionsSubState extends FlxUISubState {
         },
         {
             preview_text: "Framerate",
-            description_text: "" // figure it tf out
+            description_text: "Left & Right to adjust." // figure it tf out
         },
         {
             preview_text: "Controls",
@@ -144,29 +146,17 @@ class OptionsSubState extends FlxUISubState {
             
             for (option in optionTexts.members) {
                 if (option.ID == curSelected) {
-                    settingText.visible = false;
-    
                     option.isSelected = true;
                     camFollow.setPosition(FlxG.width / 2, option.y + (option.height / 2));
     
                     curOption = option;
                     
                     descText.text = curOption.data.description_text;
-                    switch (option.data.preview_text) {
-                        default:
-                            if (option.data.variable_name != null) {
-                                settingText.visible = true;
-                                settingText.text = '${cast(Reflect.getProperty(FlxG.save.data, option.data.variable_name), Bool)}'.toUpperCase();
-                            }
-    
-                        case 'Framerate':
-                            settingText.visible = true;
 
-                        case 'Controls':
-                            settingText.visible = true;
-
-                        case 'Back':
-                            // Absolutely nothing!
+                    settingText.text = "";
+                    if (option.data.variable_name != null) {
+                        settingText.visible = true;
+                        settingText.text = '${cast(Reflect.getProperty(FlxG.save.data, option.data.variable_name), Bool)}'.toUpperCase();
                     }
                 } else {
                     option.isSelected = false;
@@ -182,7 +172,7 @@ class OptionsSubState extends FlxUISubState {
                     if (curOption.data.variable_name != null) {
                         var property = Reflect.getProperty(FlxG.save.data, curOption.data.variable_name);
 
-                        if (property != null) {
+                        if (property != null && Std.isOfType(property, Bool)) {
                             FlxG.sound.play(Resources.getAudio('sfx/confirmMenu'), 0.7);
     
                             try {
@@ -244,6 +234,10 @@ class OptionsSubState extends FlxUISubState {
                     // I'm so fucking sorry lmfao
                     settingText.text = '[${map.get('left')[0].toString().toUpperCase()},${map.get('down')[0].toString().toUpperCase()},${map.get('up')[0].toString().toUpperCase()},${map.get('right')[0].toString().toUpperCase()}]';
                 }
+
+            case 'Back':
+                if (lastOption != curOption)
+                    descText.text = Dirty.secretBackTexts[FlxG.random.int(0, Dirty.secretBackTexts.length - 1)];
         }
             
         lastOption = curOption;

@@ -299,6 +299,15 @@ class PlayState extends MusicBeatState
         };
 
         new FlxTimer().start(beatTime / 1000, (timer) -> {
+            if (player.animation.finished)
+                player.dance();
+
+            if (opponent.animation.finished)
+                opponent.dance();
+
+            if (iterations % 2 == 0 && dancer.animation.finished)
+                dancer.dance();
+
             switch (_songData.stage) {
                 default:
                     switch (iterations) {

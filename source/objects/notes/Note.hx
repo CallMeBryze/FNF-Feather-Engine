@@ -1,5 +1,7 @@
-package objects.arrows;
+package objects.notes;
 
+import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
 import engine.Conductor;
 import engine.Resources;
 import engine.Song.HitType;
@@ -7,11 +9,9 @@ import engine.UserData;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.math.FlxPoint;
 import haxe.Json;
-import objects.arrows.Strumline.StrumNote;
+import objects.notes.Strumline.StrumNote;
 import states.PlayState;
 
 typedef NoteStyle = {
@@ -34,7 +34,9 @@ typedef NoteAnimationOffsets = {
 }
 
 class Note extends FlxSprite {
-    @:deprecated
+    /**
+     * Try to avoid using this where possible
+     */
     public static final defaultNoteWidth:Int = 150;
 
     private var properties:NoteStyle;
@@ -43,12 +45,15 @@ class Note extends FlxSprite {
     public var isSustain:Bool = false;
 
 	public var scoreMultiplier:Float = 1;
+    
     public var noteFocus:HitType = OPPONENT;
 
     public var strumTime:Float;
     public var sustainLength:Float;
 
+    public var strumLine:Strumline;
     public var strumParent:StrumNote;
+
     public var prevNote:Note;
 
     public var noteParent:Note;
@@ -120,7 +125,7 @@ class Note extends FlxSprite {
         }
     }
 
-    override function update(elapsed):Void {
+    override public function update(elapsed):Void {
         super.update(elapsed);
 
 		canBeHit = false;

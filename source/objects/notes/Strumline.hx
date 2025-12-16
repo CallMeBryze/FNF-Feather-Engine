@@ -1,4 +1,4 @@
-package objects.arrows;
+package objects.notes;
 
 import engine.Conductor;
 import engine.Conductor;
@@ -12,13 +12,22 @@ import flixel.group.FlxSpriteContainer;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import haxe.Json;
-import objects.arrows.Note;
+import objects.notes.Note;
 import states.PlayState;
 
-class Strumline extends FlxSpriteContainer {
-    public var strums:FlxTypedGroup<StrumNote> = new FlxTypedGroup();
+class Strumline extends FlxTypedSpriteContainer<StrumNote> {
+	private var properties:NoteStyle;
 
     override public function new(x:Float, y:Float, ?style:String = 'default') {
+		properties = Json.parse(Resources.getTxt('data/styles/$style', "json"));
+
+		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != '$style:${properties.strumArrowsPath}')) {
+			PlayState.strumAtlas = {
+				identifier: '$style:${properties.strumArrowsPath}',
+				sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
+			}
+		}
+
         super(x, y);
 
         var lastStrum:StrumNote = null;
@@ -40,35 +49,23 @@ class Strumline extends FlxSpriteContainer {
             if (lastStrum != null)
                 startX = lastStrum.width;
 
-            var strumNote:StrumNote = new StrumNote((startX * 0.7) * i, 0, direction, style);
+            var strumNote:StrumNote = new StrumNote((startX * 0.7) * i, 0, direction, properties);
 			add(strumNote);
 
             lastStrum = strumNote;
-            strums.add(strumNote);
         }
     }
 }
 
 class StrumNote extends FlxSprite
 {
-	private var properties:NoteStyle;
 	private var offsets:Map<String, FlxPoint> = new Map();
-
     public var direction:NoteDirection = LEFT;
 
-	override public function new(x:Float, y:Float, direction:NoteDirection = LEFT, ?style:String = 'default')
+	override public function new(x:Float, y:Float, direction:NoteDirection = LEFT, properties:NoteStyle)
 	{
-		properties = Json.parse(Resources.getTxt('data/styles/$style', "json"));
 		for (offset in properties.strumOffsets)
 			offsets.set(offset.name, new FlxPoint(offset.x, offset.y));
-
-		if (PlayState.strumAtlas == null || (PlayState.strumAtlas != null && PlayState.strumAtlas.identifier != '$style:${properties.strumArrowsPath}'))
-		{
-			PlayState.strumAtlas = {
-				identifier: '$style:${properties.strumArrowsPath}',
-				sparrow: Resources.getSparrowAtlas(properties.strumArrowsPath)
-			}
-		}
 
         this.direction = direction;
 

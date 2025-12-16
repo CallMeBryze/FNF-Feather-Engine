@@ -217,7 +217,7 @@ class OptionsSubState extends FlxUISubState {
                         }
 
                         safeToCycle = false;
-                        cycleTimer.start(0.1, (timer) -> {
+                        cycleTimer.start(0.05, (timer) -> {
                             safeToCycle = true;
                         });
                         

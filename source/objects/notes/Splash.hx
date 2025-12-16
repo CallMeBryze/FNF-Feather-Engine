@@ -1,4 +1,4 @@
-package objects.arrows;
+package objects.notes;
 
 import engine.Resources;
 import flixel.FlxCamera;
@@ -6,15 +6,15 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import haxe.Json;
-import objects.arrows.Note.NoteDirection;
-import objects.arrows.Note.NoteStyle;
-import objects.arrows.Strumline.StrumNote;
+import objects.notes.Note.NoteDirection;
+import objects.notes.Note.NoteStyle;
+import objects.notes.Strumline.StrumNote;
 import states.PlayState;
 
-class NoteSplash extends FlxSprite {
+class Splash extends FlxSprite {
     private var properties:NoteStyle;
 
-    public var group:FlxTypedGroup<NoteSplash>;
+    public var group:FlxTypedGroup<Splash>;
 
 	override public function new(?style:String = 'default')
 	{

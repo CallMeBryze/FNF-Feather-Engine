@@ -26,9 +26,9 @@ import objects.AtlasText;
 import objects.Character;
 import objects.HealthIcon;
 import objects.Player;
-import objects.arrows.Note;
-import objects.arrows.NoteSplash;
-import objects.arrows.Strumline;
+import objects.notes.Note;
+import objects.notes.Splash;
+import objects.notes.Strumline;
 import states.debug.ChartingState;
 import states.substates.PauseSubState;
 import states.template.MusicBeatState;
@@ -67,7 +67,7 @@ class PlayState extends MusicBeatState
 
 	private var renderedNotes:FlxTypedGroup<Note> = new FlxTypedGroup();
 	private var renderedSustains:FlxTypedGroup<Note> = new FlxTypedGroup();
-    private var renderedSplashes:FlxTypedGroup<NoteSplash> = new FlxTypedGroup();
+    private var renderedSplashes:FlxTypedGroup<Splash> = new FlxTypedGroup();
 
     private var health:Float = 1;
 
@@ -228,19 +228,12 @@ class PlayState extends MusicBeatState
             opponentStrumLine.visible = false;
             playerStrumLine.screenCenter(X);
         }
-
-        add(playerStrumLine);
-        add(opponentStrumLine);
         
-        var tempSplash:NoteSplash = new NoteSplash(gameStyle);
+        var tempSplash:Splash = new Splash(gameStyle);
         tempSplash.group = renderedSplashes;
 
         renderedNotes.camera = hudCam;
         renderedSustains.camera = hudCam;
-
-        add(renderedSustains);
-		add(renderedNotes);
-        add(renderedSplashes);
 
         var healthBarBG:FlxSprite = new FlxSprite().makeGraphic(Math.floor(FlxG.width / 2) + 8, 16 + 8, FlxColor.BLACK);
         healthBarBG.camera = hudCam;
@@ -276,6 +269,13 @@ class PlayState extends MusicBeatState
         add(opponentIcon);
 
         updateIconPosition();
+
+        add(playerStrumLine);
+        add(opponentStrumLine);
+
+        add(renderedSustains);
+        add(renderedNotes);
+        add(renderedSplashes);
 
         sectionData = _songData.notes[0];
         generateSong();
@@ -478,11 +478,6 @@ class PlayState extends MusicBeatState
         scoreTxt.text = 'Score: ' + curScore;
 
         if ((inCountdown || songStarted) && !inGameOver) {
-            for (strum in opponentStrumLine.strums) {
-                if (strum.animation.finished)
-                    strum.playAnim("static");
-            }
-
             if (!songStarted && inCountdown) {
                 Conductor.songPosition += elapsed * 1000;
             }
@@ -516,33 +511,28 @@ class PlayState extends MusicBeatState
             }
         }
 
-		var final_scrollSpeed:Float = 0.45 * PlayState._songData.scrollSpeed;
+		var scrollSpeed:Float = 0.45 * PlayState._songData.scrollSpeed;
+        var sectionLength:Float = (Conductor.stepCrochet * 16) * scrollSpeed;
+
         songNotes.forEachAlive((note) -> {
             var strumNote:StrumNote = note.strumParent;
 			var targetY:Float = (strumNote.y + (strumNote.height / 2)) - (note.height / 2);
 
             note.x = strumNote.x + ((strumNote.width / 2) - (note.width / 2));
 
+            var noteTiming:Float = (songPos - note.strumTime) * scrollSpeed;
 			if (!isDownscroll) { // UPSCROLL
-                note.y = targetY - ((songPos - note.strumTime) * final_scrollSpeed);
-
-                if (note.y <= hudCam.height) {
-                    note.active = note.visible = true;
-                }
-                else {
-                    note.active = note.visible = false;
-                    return; // Why bother?
-                }
+                note.y = targetY - noteTiming;
             } else { // DOWNSCROLL
-                note.y = targetY + ((songPos - note.strumTime) * final_scrollSpeed);
+                note.y = targetY + noteTiming;
+            }
 
-                if (note.y >= -note.height) {
-                    note.active = note.visible = true;
-                }
-                else {
-                    note.active = note.visible = false;
-                    return; // Why bother?
-                }
+            if (noteTiming >= -sectionLength) {
+                note.active = true;
+                note.visible = note.strumLine.visible;
+            } else {
+                note.active = note.visible = false;
+                return; // Don't bother
             }
 
             if (note.noteFocus == PLAYER) {
@@ -559,10 +549,9 @@ class PlayState extends MusicBeatState
                     }
                 }
 			} else if (note.noteFocus == OPPONENT) {
-                if (isMiddlescroll)
-                    note.visible = false;
-
 				if (!note.wasHit && Conductor.songPosition >= note.strumTime) {
+                    note.strumParent.playAnim('confirm');
+
 					singNote(opponent, note, false);
 					note.wasHit = true;
 
@@ -572,8 +561,9 @@ class PlayState extends MusicBeatState
                     }
                 }
 
-                if (note.isSustain)
-				    handleSustains(note);
+                if (note.isSustain) {
+                    handleSustains(note);
+                }
             }
 
             if (note.tooLate && !isDownscroll) {
@@ -596,6 +586,11 @@ class PlayState extends MusicBeatState
         }
 
 		handleInput(player);
+
+        for (strum in opponentStrumLine.members) {
+            if (strum.animation.finished)
+                strum.playAnim("static");
+        }
 	}
 
     override function closeSubState():Void {
@@ -635,7 +630,8 @@ class PlayState extends MusicBeatState
 				var note:Note = new Note(noteData.strumTime, Note.convertToEnum(noteData.arrow), false, null, gameStyle);
                 note.sustainLength = noteData.sustainLength;
                 note.noteFocus = group.type;
-                note.strumParent = strumLine.strums.members[noteData.arrow];
+                note.strumParent = strumLine.members[noteData.arrow];
+                note.strumLine = strumLine;
                 note.active = note.visible = false;
 				songNotes.add(note);
 
@@ -653,8 +649,9 @@ class PlayState extends MusicBeatState
 
 						sustainNote.strumTime += Conductor.stepCrochet / 2;
                         sustainNote.noteParent = note;
-						sustainNote.noteFocus = group.type;
+						sustainNote.noteFocus = prevNote.noteFocus;
 						sustainNote.strumParent = prevNote.strumParent;
+                        sustainNote.strumLine = prevNote.strumLine;
                         sustainNote.active = sustainNote.visible = false;
 						songNotes.add(sustainNote);
 
@@ -712,7 +709,7 @@ class PlayState extends MusicBeatState
 		var justPressed = Controls.justPressedInputArray;
 		var heldPressed = Controls.pressedInputArray;
 
-		for (strum in playerStrumLine.strums) {
+		for (strum in playerStrumLine.members) {
 			var directionIndex = Note.convertFromEnum(strum.direction);
 			if (!heldPressed[directionIndex] && strum.animation.finished)
 				strum.playAnim("static");
@@ -745,6 +742,8 @@ class PlayState extends MusicBeatState
 			if (note.isSustain) {
 				if (anyHeldPressed && heldPressed[dirIndex]) {
 					if (note.canBeHit && (note.noteParent != null && note.noteParent.wasHit || note.noteParent == null)) {
+                        note.strumParent.playAnim('confirm');
+
                         if (!hitSustainNotes.exists(dirIndex))
                             hitSustainNotes.set(dirIndex, note);
                         
@@ -752,16 +751,8 @@ class PlayState extends MusicBeatState
 						note.wasHit = true;
                     }
 
-                    if (note.wasHit) {
-                        if (!hitSustainNotes.exists(dirIndex))
-                            hitSustainNotes.set(dirIndex, note);
-
+                    if (note.wasHit || !note.wasHit && (note.prevNote != null && note.prevNote.wasHit || note.prevNote == null)) {
                         handleSustains(note);
-                    } else if (note.prevNote != null && note.prevNote.wasHit) {
-                        if (!hitSustainNotes.exists(dirIndex))
-                            hitSustainNotes.set(dirIndex, note);
-
-						handleSustains(note);
                     }
 				}
 
@@ -792,13 +783,15 @@ class PlayState extends MusicBeatState
 
 		for (i in 0...justPressed.length) {
 			if (justPressed[i] && !bestDirectionNotes.exists(i) && !hitSustainNotes.exists(i)) {
-				playerStrumLine.strums.members[i].playAnim("pressed");
+				playerStrumLine.members[i].playAnim("pressed");
 				missNote(character, Note.convertToEnum(i), true, true);
 			}
 		}
 
 		for (dirIndex => note in bestDirectionNotes) {
 			if (justPressed[dirIndex]) {
+                note.strumParent.playAnim('confirm');
+
 				singNote(character, note, true);
 				note.wasHit = true;
 				removeNote(note);
@@ -807,8 +800,6 @@ class PlayState extends MusicBeatState
 	}
 
 	private function singNote(character:Character, note:Note, ?isPlayer:Bool = false):Void {
-		note.strumParent.playAnim('confirm');
-
 		var animToSing:String = "singLEFT";
 
 		switch (note.direction) {
@@ -934,9 +925,9 @@ class PlayState extends MusicBeatState
     }
 
     private function createSplash(note:Note):Void {
-		var splashNote:NoteSplash = cast(recycle(NoteSplash), NoteSplash);
+		var splashNote:Splash = cast(recycle(Splash), Splash);
 		if (splashNote == null)
-			splashNote = new NoteSplash();
+			splashNote = new Splash();
 
 		splashNote.group = renderedSplashes;
 		splashNote.camera = hudCam;

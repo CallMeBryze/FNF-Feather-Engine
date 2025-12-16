@@ -4,6 +4,12 @@ import flixel.FlxBasic;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 
+/**
+ * REPLACE THIS LATER!!!
+ * IT'S FUCKING STUPID!!!
+ */
+
+@:deprecated
 class SongGroup extends FlxBasic {
     /**
      * Only contains the instrumental, but all tracks try to match every property possible other than volume.

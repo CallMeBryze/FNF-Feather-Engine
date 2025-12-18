@@ -512,69 +512,78 @@ class PlayState extends MusicBeatState
         }
 
 		var scrollSpeed:Float = 0.45 * PlayState._songData.scrollSpeed;
-        var sectionLength:Float = (Conductor.stepCrochet * 16) * scrollSpeed;
+        var visibleSectionLength:Float = (Conductor.stepCrochet * (16 * (hudCam.height / 720))) * scrollSpeed;
 
-        songNotes.forEachAlive((note) -> {
-            var strumNote:StrumNote = note.strumParent;
-			var targetY:Float = (strumNote.y + (strumNote.height / 2)) - (note.height / 2);
-
-            note.x = strumNote.x + ((strumNote.width / 2) - (note.width / 2));
-
+        songNotes.forEachExists((note) -> {
             var noteTiming:Float = (songPos - note.strumTime) * scrollSpeed;
-			if (!isDownscroll) { // UPSCROLL
-                note.y = targetY - noteTiming;
-            } else { // DOWNSCROLL
-                note.y = targetY + noteTiming;
-            }
-
-            if (noteTiming >= -sectionLength) {
+            if (noteTiming < -visibleSectionLength) {
+                note.active = note.visible = false;
+                return; // Don't bother updating this note.
+            } else {
                 note.active = true;
                 note.visible = note.strumLine.visible;
-            } else {
-                note.active = note.visible = false;
-                return; // Don't bother
-            }
 
-            if (note.noteFocus == PLAYER) {
-                if (note.tooLate) {
-                    note.active = false;
+                if (!note.alive) {
+                    if (!note.isSustain) {
+                        renderedNotes.add(note);
+                    } else {
+                        renderedSustains.add(note);
+                    }
 
-                    if (!note.wasMissed && (!note.wasHit && note.noteFocus == PLAYER)) {
-                        note.wasMissed = true;
+                    note.alive = true;
+                }
 
-                        if (!note.isSustain)
-                            missNote(player, note.direction, true, true);
-                        else
-						    health -= 0.025;
+                var strumNote:StrumNote = note.strumParent;
+                var targetY:Float = (strumNote.y + (strumNote.height / 2)) - (note.height / 2);
+    
+                note.x = strumNote.x + ((strumNote.width / 2) - (note.width / 2));
+                if (!isDownscroll) { // UPSCROLL
+                    note.y = targetY - noteTiming;
+                } else { // DOWNSCROLL
+                    note.y = targetY + noteTiming;
+                }
+    
+                if (note.noteFocus == PLAYER) {
+                    if (note.tooLate) {
+                        note.active = false;
+    
+                        if (!note.wasMissed && (!note.wasHit && note.noteFocus == PLAYER)) {
+                            note.wasMissed = true;
+    
+                            if (!note.isSustain)
+                                missNote(player, note.direction, true, true);
+                            else
+                                health -= 0.025;
+                        }
+                    }
+                } else if (note.noteFocus == OPPONENT) {
+                    if (!note.wasHit && Conductor.songPosition >= note.strumTime) {
+                        note.strumParent.playAnim('confirm');
+    
+                        singNote(opponent, note, false);
+                        note.wasHit = true;
+    
+                        if (!note.isSustain) {
+                            removeNote(note);
+                            return;
+                        }
+                    }
+    
+                    if (note.isSustain) {
+                        handleSustains(note);
                     }
                 }
-			} else if (note.noteFocus == OPPONENT) {
-				if (!note.wasHit && Conductor.songPosition >= note.strumTime) {
-                    note.strumParent.playAnim('confirm');
-
-					singNote(opponent, note, false);
-					note.wasHit = true;
-
-					if (!note.isSustain) {
-						removeNote(note);
+    
+                if (note.tooLate && !isDownscroll) {
+                    if (note.y <= -note.height) {
+                        removeNote(note);
                         return;
                     }
-                }
-
-                if (note.isSustain) {
-                    handleSustains(note);
-                }
-            }
-
-            if (note.tooLate && !isDownscroll) {
-                if (note.y <= -note.height) {
-					removeNote(note);
-                    return;
-                }
-			} else if (note.tooLate && isDownscroll) {
-                if (note.y >= hudCam.height) {
-					removeNote(note);
-                    return;
+                } else if (note.tooLate && isDownscroll) {
+                    if (note.y >= hudCam.height) {
+                        removeNote(note);
+                        return;
+                    }
                 }
             }
         });
@@ -669,11 +678,15 @@ class PlayState extends MusicBeatState
                         }
 
 						prevNote = sustainNote;
-						renderedSustains.add(sustainNote);
+						// renderedSustains.add(sustainNote);
+
+                        sustainNote.alive = false;
 					}
 				}
 
-				renderedNotes.add(note);
+				// renderedNotes.add(note);
+
+                note.alive = false;
             }
         }
 
@@ -975,12 +988,10 @@ class PlayState extends MusicBeatState
     }
 
     private function removeNote(note:Note):Void {
-		note.kill();
+        note.kill();
 
-        if (renderedNotes.members.contains(note))
-            renderedNotes.remove(note, true);
-        else if (renderedSustains.members.contains(note))
-            renderedSustains.remove(note, true);
+        renderedNotes.remove(note, true);
+        renderedSustains.remove(note, true);
 
 		songNotes.remove(note, true);
 
